@@ -1,0 +1,68 @@
+{
+  "results": [
+    {
+      "strategy": "sliding_window_100_50",
+      "top_k": 3,
+      "cases_counted": 18,
+      "hit_at_k": 0.667,
+      "mrr": 0.537
+    },
+    {
+      "strategy": "sliding_window_100_50",
+      "top_k": 5,
+      "cases_counted": 18,
+      "hit_at_k": 0.833,
+      "mrr": 0.573
+    },
+    {
+      "strategy": "structured_header_150_75",
+      "top_k": 3,
+      "cases_counted": 18,
+      "hit_at_k": 0.278,
+      "mrr": 0.185
+    },
+    {
+      "strategy": "structured_header_150_75",
+      "top_k": 5,
+      "cases_counted": 18,
+      "hit_at_k": 0.389,
+      "mrr": 0.21
+    },
+    {
+      "strategy": "structured_header_200_100",
+      "top_k": 3,
+      "cases_counted": 18,
+      "hit_at_k": 0.278,
+      "mrr": 0.185
+    },
+    {
+      "strategy": "structured_header_200_100",
+      "top_k": 5,
+      "cases_counted": 18,
+      "hit_at_k": 0.389,
+      "mrr": 0.21
+    },
+    {
+      "strategy": "recipe_boundary_120_60",
+      "top_k": 3,
+      "cases_counted": 18,
+      "hit_at_k": 0.778,
+      "mrr": 0.685
+    },
+    {
+      "strategy": "recipe_boundary_120_60",
+      "top_k": 5,
+      "cases_counted": 18,
+      "hit_at_k": 0.889,
+      "mrr": 0.71
+    }
+  ],
+  "best": {
+    "strategy": "recipe_boundary_120_60",
+    "top_k": 5,
+    "cases_counted": 18,
+    "hit_at_k": 0.889,
+    "mrr": 0.71
+  },
+  "elapsed_s": 0.02
+}

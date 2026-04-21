@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "documents": {
+    "utah_wic_recipe_book": {
+      "collection": "recipes",
+      "title": "Utah WIC Recipe Book",
+      "source_url": "https://wic.utah.gov/wp-content/uploads/WIC-Recipe-Book.pdf",
+      "license": "Public domain (17 USC \u00a7 105)",
+      "authority_level": "medium",
+      "sha256": "1453dacd2f1d34ae83a812ecca1a129012b40ed16ab221a40a0d412cdb6655b3",
+      "chunk_count": 6,
+      "raw_path": "data/rag/demo/recipes/raw/utah_wic_recipe_book.txt",
+      "chunks_path": "data/rag/demo/recipes/chunks/chunks.jsonl",
+      "index_path": "data/rag/demo/recipes/index/bm25.pkl"
+    },
+    "lets_cook_with_kids_ca_wic": {
+      "collection": "recipes",
+      "title": "Let's Cook With Kids (California WIC)",
+      "source_url": "https://www.smchealth.org/sites/main/files/file-attachments/wic-ne-cookingwithchildren-letscookwithkids.pdf",
+      "license": "Public domain (17 USC \u00a7 105)",
+      "authority_level": "medium",
+      "sha256": "48e6ed2434cf4f511872a7b52f5cbac44b1a62e64d5fe708459cc86911cb32fa",
+      "chunk_count": 4,
+      "raw_path": "data/rag/demo/recipes/raw/lets_cook_with_kids_ca_wic.txt",
+      "chunks_path": "data/rag/demo/recipes/chunks/chunks.jsonl",
+      "index_path": "data/rag/demo/recipes/index/bm25.pkl"
+    },
+    "nutrition_science_everyday_application": {
+      "collection": "nutrition_science",
+      "title": "Nutrition: Science and Everyday Application",
+      "source_url": "https://openoregon.pressbooks.pub/nutritionscience2e/",
+      "license": "CC BY 4.0",
+      "authority_level": "medium",
+      "sha256": "1da5d0a15c44db8ba8ca189e61b1da5e12a3b8c03719c9d21ef29a1c0aef1aa5",
+      "chunk_count": 9,
+      "raw_path": "data/rag/demo/nutrition_science/raw/nutrition_science_everyday_application.txt",
+      "chunks_path": "data/rag/demo/nutrition_science/chunks/chunks.jsonl",
+      "index_path": "data/rag/demo/nutrition_science/index/bm25.pkl"
+    },
+    "human_nutrition_hawaii": {
+      "collection": "nutrition_science",
+      "title": "Human Nutrition (University of Hawai'i)",
+      "source_url": "https://pressbooks.oer.hawaii.edu/humannutrition2/",
+      "license": "CC BY 4.0",
+      "authority_level": "medium",
+      "sha256": "acd1e359c114b24823fa5c754ce2de143300f0f1297f3b9c16d8625efa839140",
+      "chunk_count": 9,
+      "raw_path": "data/rag/demo/nutrition_science/raw/human_nutrition_hawaii.txt",
+      "chunks_path": "data/rag/demo/nutrition_science/chunks/chunks.jsonl",
+      "index_path": "data/rag/demo/nutrition_science/index/bm25.pkl"
+    }
+  }
+}

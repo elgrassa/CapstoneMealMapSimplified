@@ -1,0 +1,28 @@
+# Nutrition: Science and Everyday Application — demo excerpt
+# Source URL: https://openoregon.pressbooks.pub/nutritionscience2e/
+# License: CC BY 4.0 (Open Oregon Educational Resources)
+# Content type: hand-curated topical summaries of five representative sections
+
+## Section 1 — Vitamin D and calcium
+
+Vitamin D is a fat-soluble vitamin essential for calcium absorption and bone mineralization. The Recommended Dietary Allowance (RDA) for adults aged 19 to 70 years is 15 micrograms (600 IU) per day; for adults older than 70, the RDA rises to 20 micrograms (800 IU) per day. Food sources include fatty fish (salmon, mackerel), fortified milk, and egg yolks. Vitamin D is also synthesized in the skin upon exposure to ultraviolet B radiation.
+
+Low vitamin D status is associated with impaired calcium absorption and increased risk of osteomalacia and osteoporosis. However, vitamin D status should be assessed by a clinician; this text is educational only.
+
+## Section 2 — Dietary fiber
+
+Dietary fiber is a type of carbohydrate that the body cannot digest. The Adequate Intake is 25 grams per day for adult women and 38 grams per day for adult men, though most adults consume far less. Soluble fiber (oats, legumes, apples) slows digestion and can help regulate blood glucose and cholesterol. Insoluble fiber (whole grains, vegetables, nuts) adds bulk to stool and supports regular bowel movements.
+
+Adequate fiber is associated with reduced risk of cardiovascular disease, type 2 diabetes, and colorectal cancer in population studies.
+
+## Section 3 — Protein requirements
+
+The Recommended Dietary Allowance for protein is 0.8 grams per kilogram of body weight per day for healthy adults. Needs are higher during pregnancy (+25 g/day), lactation (+25 g/day), during recovery from illness, and in highly physically active individuals. Plant-based diets can fully meet protein needs when varied (legumes + grains + nuts seeds).
+
+## Section 4 — Sodium and blood pressure
+
+Excess sodium intake is associated with elevated blood pressure. The Chronic Disease Risk Reduction Intake is 2,300 mg of sodium per day for adults; many adults consume more than this from processed foods. Reducing sodium is a population-level strategy to reduce the burden of hypertension and cardiovascular disease. Children, especially toddlers, have substantially lower sodium needs and benefit from diets based on whole foods with minimal added salt.
+
+## Section 5 — Hydration and water
+
+Total water intake (from beverages and food) of about 2.7 liters per day for adult women and 3.7 liters per day for adult men is recommended by the Institute of Medicine (now the Health and Medicine Division of the National Academies). Needs increase with hot climates, physical activity, and lactation. Thirst is a late indicator of dehydration; older adults often have a blunted thirst response and benefit from scheduled fluid intake.

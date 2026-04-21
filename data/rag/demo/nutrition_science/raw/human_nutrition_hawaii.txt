@@ -1,0 +1,30 @@
+# Human Nutrition (University of Hawai'i) — demo excerpt
+# Source URL: https://pressbooks.oer.hawaii.edu/humannutrition2/
+# License: CC BY 4.0 (University of Hawai'i Pressbooks)
+# Content type: hand-curated topical summaries of five representative sections
+
+## Section 1 — Iron and vitamin C interaction
+
+Dietary iron comes in two forms: heme iron, found in meat, poultry, and fish, and non-heme iron, found in plant foods (spinach, lentils, beans, fortified cereals). Non-heme iron has lower bioavailability. Ascorbic acid (vitamin C) consumed in the same meal can enhance non-heme iron absorption approximately three to four fold by forming a soluble complex that resists the inhibitory effects of plant compounds such as phytates and polyphenols.
+
+Practical application: people following a vegetarian or vegan diet, and those with borderline iron status, benefit from pairing iron-rich plant foods with vitamin C sources (citrus fruit, bell peppers, tomatoes, strawberries) in the same meal.
+
+## Section 2 — Iron in childhood
+
+Infants and young children require sufficient iron for normal brain development. The RDA for iron is 11 milligrams per day for infants aged 7 to 12 months and 7 milligrams per day for children aged 1 to 3 years. Excellent iron sources include iron-fortified cereals, meats, beans, and dark green leafy vegetables. Dairy-heavy diets that displace iron-rich foods can contribute to iron deficiency.
+
+If you are concerned about a child's iron status, consult a paediatrician; this text is educational only.
+
+## Section 3 — Fat-soluble vitamins A, D, E, and K
+
+Fat-soluble vitamins are absorbed together with dietary fat and stored in body tissues. A meal containing some dietary fat (olive oil, nuts, avocado) improves absorption of the fat-soluble vitamins A (found in orange vegetables), D (fortified dairy, fatty fish), E (nuts, seeds, vegetable oils), and K (leafy greens).
+
+Raw carrot juice and other low-fat preparations of vitamin-rich foods may have reduced bioavailability compared to the same foods prepared with a small amount of oil or dressing.
+
+## Section 4 — Magnesium
+
+Magnesium is a cofactor for more than 300 enzymatic reactions, including those involved in protein synthesis, muscle function, and nerve transmission. The RDA is 310 to 320 mg per day for women and 400 to 420 mg per day for men. Food sources include whole grains, nuts, seeds, legumes, and green leafy vegetables. Refining grains removes much of the magnesium, so whole grains are a better source than refined equivalents.
+
+## Section 5 — Omega-3 fatty acids
+
+Long-chain omega-3 fatty acids EPA and DHA are found in fatty fish such as salmon, sardines, and mackerel. They are associated with cardiovascular benefits in population studies. The short-chain omega-3 ALA, found in flaxseed, chia seed, and walnuts, can be converted to EPA and DHA in the body but only at low efficiency. Aim for two servings of fatty fish per week; a plant-based diet can rely on ALA sources plus, if desired, an algae-derived EPA/DHA supplement.

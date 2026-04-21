@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "derived_from": ["human_nutrition_hawaii", "nutrition_science_everyday_application"],
+  "note": "Cofactor facts extracted from the bundled textbooks. Useful for the agent's get_nutrition_facts + search_knowledge chain in the Streamlit demo.",
+  "facts": [
+    {"id": "cf_01", "pair": ["vitamin_c", "non_heme_iron"], "interaction": "enhance", "magnitude": "3-4x absorption", "description": "Vitamin C consumed in the same meal enhances non-heme iron absorption by forming a soluble complex that resists phytate/polyphenol inhibition."},
+    {"id": "cf_02", "pair": ["dietary_fat", "vitamin_a"], "interaction": "enhance", "magnitude": "improves absorption", "description": "Fat-soluble vitamins A/D/E/K are absorbed together with dietary fat; include a small amount of oil/nuts with orange vegetables."},
+    {"id": "cf_03", "pair": ["dietary_fat", "vitamin_d"], "interaction": "enhance", "magnitude": "improves absorption", "description": "Vitamin D absorption improves when consumed with dietary fat (egg yolks, fortified milk with a small amount of fat, fatty fish)."},
+    {"id": "cf_04", "pair": ["dietary_fat", "vitamin_e"], "interaction": "enhance", "magnitude": "improves absorption", "description": "Vitamin E is fat-soluble; paired with nuts, seeds, or oils for optimal absorption."},
+    {"id": "cf_05", "pair": ["dietary_fat", "vitamin_k"], "interaction": "enhance", "magnitude": "improves absorption", "description": "Vitamin K in leafy greens is better absorbed with a small amount of fat (olive oil dressing)."},
+    {"id": "cf_06", "pair": ["phytate", "non_heme_iron"], "interaction": "inhibit", "magnitude": "reduces absorption", "description": "Phytic acid in whole grains, legumes, and nuts can reduce non-heme iron absorption; pair with vitamin C to mitigate."},
+    {"id": "cf_07", "pair": ["polyphenol_tea", "non_heme_iron"], "interaction": "inhibit", "magnitude": "reduces absorption", "description": "Polyphenols in tea and coffee inhibit non-heme iron absorption when consumed with a meal."},
+    {"id": "cf_08", "pair": ["calcium", "iron"], "interaction": "inhibit", "magnitude": "competitive", "description": "High-dose calcium consumed alongside iron can reduce iron absorption; space supplemental calcium away from iron-rich meals."},
+    {"id": "cf_09", "pair": ["vitamin_d", "calcium"], "interaction": "enable", "magnitude": "permissive", "description": "Vitamin D is required for efficient calcium absorption in the small intestine."},
+    {"id": "cf_10", "pair": ["magnesium", "vitamin_d_activation"], "interaction": "cofactor", "magnitude": "enzymatic", "description": "Magnesium is a cofactor for enzymes that activate vitamin D in the body."}
+  ]
+}

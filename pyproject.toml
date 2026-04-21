@@ -1,0 +1,84 @@
+[project]
+name = "mealmaster-capstone-simplified"
+version = "0.1.0"
+description = "Simplified capstone submission — nutrition & recipe RAG agent derived from MealMaster (see meal-map.app)"
+requires-python = ">=3.13,<3.14"
+readme = "README.md"
+license = { text = "AGPL-3.0" }
+authors = [
+    { name = "Pavlo Skorodziievskyi" },
+]
+
+dependencies = [
+    # Core RAG + agent
+    "pydantic>=2.10,<3",
+    "pydantic-ai>=1.0,<2",
+    "openai>=1.60,<2",
+    "minsearch>=0.0.10,<1",
+    "numpy>=1.26,<3",
+    "tenacity>=9,<10",
+
+    # Backend (FastAPI surface for rubric "Code organization")
+    "fastapi>=0.115,<1",
+    "uvicorn[standard]>=0.34,<1",
+    "python-multipart>=0.0.20,<1",
+    "slowapi>=0.1.9,<1",
+
+    # Demo UI + monitoring dashboard
+    "streamlit>=1.37,<2",
+    "pandas>=2.2,<3",
+
+    # File I/O
+    "pyyaml>=6,<7",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<9",
+    "pytest-xdist>=3.0,<4",
+    "pytest-cov>=4.0,<7",
+    "httpx>=0.28,<1",
+    "ruff>=0.6,<1",
+]
+test = [
+    # Mutation testing — surfaces tests that look strong but don't actually catch mutants
+    "mutmut>=3.0,<4",
+]
+ml = [
+    # Hybrid retrieval — optional because model download is ~90 MB
+    "sentence-transformers>=3.0,<6",
+]
+
+[project.urls]
+Homepage = "https://meal-map.app"
+Repository = "https://github.com/elgrassa/CapstoneMealMapSimplified"
+"Production UI" = "https://meal-map.app"
+
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*", "backend*", "demo_ui*", "monitoring*", "ai*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "src", "ai/week1-rag"]
+addopts = "-q --tb=short"
+markers = [
+    "needs_openai: requires OPENAI_API_KEY (skipped in offline mode)",
+    "needs_corpus: requires the pre-baked demo corpus",
+]
+
+[tool.mutmut]
+paths_to_mutate = [
+    "src/mealmaster_ai/rag/evidence_gate.py",
+    "src/mealmaster_ai/rag/router.py",
+    "src/mealmaster_ai/rag/chunking.py",
+    "src/mealmaster_ai/validation/input_guardrails.py",
+    "src/mealmaster_ai/validation/response_validator.py",
+    "src/mealmaster_ai/validation/medical_boundary_sample.py",
+]
+runner = "python3 -m pytest tests/unit -x -q"
+tests_dir = "tests"

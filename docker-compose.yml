@@ -1,0 +1,56 @@
+services:
+  seed:
+    build: .
+    command: python3 scripts/seed_demo.py
+    volumes:
+      - ./data:/app/data
+    restart: "no"
+
+  backend:
+    build: .
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+    environment:
+      - PYTHONPATH=/app:/app/src:/app/ai/week1-rag
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - DEMO_MODE=true
+    volumes:
+      - ./data:/app/data
+      - ./ai/week1-rag/logs:/app/ai/week1-rag/logs
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/api/v1/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  dashboard:
+    build: .
+    command: streamlit run monitoring/dashboard.py --server.port 8501 --server.address 0.0.0.0 --server.headless true
+    ports:
+      - "8501:8501"
+    environment:
+      - PYTHONPATH=/app:/app/src:/app/ai/week1-rag
+    volumes:
+      - ./ai/week1-rag/logs:/app/ai/week1-rag/logs
+      - ./monitoring:/app/monitoring
+    depends_on:
+      - backend
+
+  demo_ui:
+    build: .
+    command: streamlit run demo_ui/app.py --server.port 8502 --server.address 0.0.0.0 --server.headless true
+    ports:
+      - "8502:8502"
+    environment:
+      - PYTHONPATH=/app:/app/src:/app/ai/week1-rag
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - BACKEND_URL=http://backend:8001
+    volumes:
+      - ./data:/app/data
+      - ./monitoring:/app/monitoring
+    depends_on:
+      - backend

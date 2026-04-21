@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "demo_mode_default": true,
+  "demo_allow_list": ["recipes", "nutrition_science"],
+  "production_note": "Production router at https://meal-map.app routes across all 5 collections, applies safety escalation on medical keywords, and allow-lists `natural_medicine_experimental` only on explicit user opt-in.",
+  "safety_escalation_keywords_sample": [
+    "disease",
+    "medication",
+    "treatment",
+    "diagnosis",
+    "symptom",
+    "deficiency"
+  ],
+  "note_on_keywords": "Sample only — production keyword list is broader and tuned against the full medical_dietary_guidelines corpus."
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0.0",
+  "note": "5 collections defined for schema parity with production. 2 marked demo_populated=true (recipes, nutrition_science); 3 are schema-only — see meal-map.app for full deployment.",
+  "collections": {
+    "recipes": {
+      "layer": "operational",
+      "default_authority": "medium",
+      "ranking_strategy": "relevance_first",
+      "search_mode": "text",
+      "demo_populated": true,
+      "document_count": 2
+    },
+    "nutrition_science": {
+      "layer": "evidence",
+      "default_authority": "medium",
+      "ranking_strategy": "relevance_plus_authority",
+      "search_mode": "text",
+      "demo_populated": true,
+      "document_count": 2
+    },
+    "health_food_practical": {
+      "layer": "evidence",
+      "default_authority": "medium",
+      "ranking_strategy": "relevance_plus_authority",
+      "search_mode": "text",
+      "demo_populated": false,
+      "document_count": 0,
+      "production_only_note": "Populated in production at https://meal-map.app"
+    },
+    "medical_dietary_guidelines": {
+      "layer": "evidence",
+      "default_authority": "high",
+      "ranking_strategy": "authority_boosted",
+      "search_mode": "text",
+      "demo_populated": false,
+      "document_count": 0,
+      "production_only_note": "Populated in production at https://meal-map.app"
+    },
+    "natural_medicine_experimental": {
+      "layer": "experimental",
+      "default_authority": "medium",
+      "ranking_strategy": "relevance_plus_authority",
+      "search_mode": "text",
+      "demo_populated": false,
+      "document_count": 0,
+      "production_only_note": "Populated in production at https://meal-map.app — opt-in, always disclaimed",
+      "routing_note": "Not routed to by default — requires explicit opt-in. Always shows disclaimer."
+    }
+  }
+}

@@ -1,0 +1,51 @@
+MealMaster Capstone — NOTICE file
+==================================
+
+Trademark and brand
+-------------------
+"MealMaster" is a trademark of Pavlo Skorodziievskyi. This repository
+is a capstone submission artifact for the Alexey Grigorev "From RAG to
+Agents" course. It is not the production MealMaster product.
+
+The production MealMaster product — including the full 5-collection
+RAG system, curated meal-planning rules, allergen-aware safety
+pipeline, family-member health profiles, Polish/EU market data, and
+proprietary tuning constants — lives at:
+
+    https://meal-map.app
+
+Third-party content
+-------------------
+This repository bundles a small, truncated demo dataset derived from
+the following public-domain / open-licensed sources:
+
+1. Recipes (layer: operational)
+   - "Keep the Beat Recipes: Heart Healthy Family Cookbook"
+     U.S. National Heart, Lung, and Blood Institute (NHLBI).
+     Public domain: 17 USC § 105 (works of the U.S. Government).
+   - "Let's Cook with Kids" (California WIC) / "Utah WIC Recipe Book"
+     USDA WIC programs. Public domain: 17 USC § 105.
+
+2. Nutrition science (layer: evidence)
+   - "Nutrition: Science and Everyday Application"
+     Open Oregon Educational Resources. License: CC BY 4.0.
+   - "Human Nutrition"
+     University of Hawai'i at Mānoa. License: CC BY 4.0.
+
+Truncation: each source is truncated to ≤15 recipes / ≤25 nutrition
+entries. Provenance, SHA256 checksums, and upstream URLs are recorded
+in `data/rag/demo/provenance_manifest.json`.
+
+Commercial use and licensing
+----------------------------
+The code in this repository is licensed under AGPL-3.0 (see LICENSE).
+The "MealMaster" name, logos, and brand identity are not licensed for
+commercial use under the AGPL — they require a separate trademark
+license from the copyright holder.
+
+For commercial licensing, partnership, or use of the MealMaster name:
+    Contact: Pavlo Skorodziievskyi (see Git commit authorship)
+
+This capstone is an educational artifact. It demonstrates the
+architecture and engineering patterns behind MealMaster; it is not
+a production nutrition or medical product.

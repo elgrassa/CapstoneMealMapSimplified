@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "derived_from": ["nutrition_science_everyday_application", "human_nutrition_hawaii"],
+  "note": "Small Recommended Dietary Allowance table extracted from the bundled textbooks. For the full DRI reference, see the NIH Office of Dietary Supplements.",
+  "values": [
+    {"nutrient": "vitamin_d", "life_stage": "adults_19_70", "rda_value": 15, "unit": "mcg/day"},
+    {"nutrient": "vitamin_d", "life_stage": "adults_over_70", "rda_value": 20, "unit": "mcg/day"},
+    {"nutrient": "iron", "life_stage": "infants_7_12m", "rda_value": 11, "unit": "mg/day"},
+    {"nutrient": "iron", "life_stage": "children_1_3y", "rda_value": 7, "unit": "mg/day"},
+    {"nutrient": "magnesium", "life_stage": "adult_women", "rda_value": 320, "unit": "mg/day"},
+    {"nutrient": "magnesium", "life_stage": "adult_men", "rda_value": 420, "unit": "mg/day"},
+    {"nutrient": "protein", "life_stage": "healthy_adults", "rda_value": 0.8, "unit": "g/kg/day"},
+    {"nutrient": "sodium_cdrr", "life_stage": "adults", "rda_value": 2300, "unit": "mg/day"},
+    {"nutrient": "fiber", "life_stage": "adult_women", "rda_value": 25, "unit": "g/day"},
+    {"nutrient": "fiber", "life_stage": "adult_men", "rda_value": 38, "unit": "g/day"}
+  ]
+}
