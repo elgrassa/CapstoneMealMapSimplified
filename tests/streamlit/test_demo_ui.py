@@ -52,16 +52,22 @@ def test_sidebar_has_capstone_brand_and_rubric_checklist():
     # Cost meter is a metric widget
     metric_labels = [m.label for m in at.sidebar.metric]
     assert "Queries this session" in metric_labels
-    assert "Est. cost (USD)" in metric_labels
+    # After the fix to pull from the rate limiter, label shifted to "Est. cost (today, USD)".
+    assert any("Est. cost" in label for label in metric_labels)
 
 
-def test_all_five_tabs_are_defined():
-    """Structural guarantee: 5 tabs exist — regressions in tab count would drop rubric coverage."""
+def test_all_top_level_tabs_are_defined():
+    """Structural guarantee: the 6 top-level tabs exist — regressions in tab count would drop rubric coverage."""
     at = _new_app()
     tab_labels = [t.label for t in at.tabs]
-    # Streamlit flattens nested tabs; at least the top-level 5 must be present.
-    top_level_labels = {"📐 0. Architecture", "💬 1. Query the demo", "📖 2. Book parsing playground",
-                        "🧪 3. Evaluation laboratory", "🎛️ 4. Parameter tuning sandbox"}
+    top_level_labels = {
+        "📐 0. Architecture",
+        "💬 1. Query the demo",
+        "📖 2. Book parsing playground",
+        "🧪 3. Evaluation laboratory",
+        "🎛️ 4. Parameter tuning sandbox",
+        "🥗 5. Recipe nutrition & household fit",
+    }
     assert top_level_labels.issubset(set(tab_labels)), f"Missing tabs. Got: {tab_labels}"
 
 

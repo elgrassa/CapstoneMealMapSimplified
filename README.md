@@ -1,6 +1,10 @@
 # meal-map — capstone submission
 
-[meal-map](https://meal-map.app) is a family meal-planning product. This repo is the **capstone submission** for Alexey Grigorev's "From RAG to Agents" course. It contains the retrieval + agent + evaluation spine: Python code, a committed demo corpus, tests, an evaluation harness, and a Streamlit app **built specifically for capstone grading**.
+> **Live grading app:** https://elgrassa-capstonemealmapsimplified-demo-uiapp-djyorf.streamlit.app/ (Streamlit Cloud)
+> **Production product:** https://meal-map.app
+> **Score (latest scorer run):** [`docs/self-score-report.md`](docs/self-score-report.md)
+
+[meal-map](https://meal-map.app) is a family meal-planning product. This repo is the **capstone submission** for Alexey Grigorev's "From RAG to Agents" course. It contains the retrieval + agent + evaluation spine: Python code, a committed demo corpus, tests, an evaluation harness, and a Streamlit app **built specifically for capstone grading** (deployed on Streamlit Cloud — URL above).
 
 The full product UI (family setup, weekly plan, shopping, pantry, nutrition tracking) lives at [meal-map.app](https://meal-map.app) and is in active development. The Streamlit app in this repo is **not** the product — it's a grading surface that exercises the retrieval + agent pipeline end-to-end in 5 tabs.
 
@@ -82,7 +86,7 @@ docker compose up -d   # seed + backend + dashboard + streamlit grading app
 - **Python pinned.** `pyproject.toml` requires Python `>=3.13,<3.14`.
 - **Dependencies locked.** [`uv.lock`](uv.lock) is committed; `uv sync` gives everyone the same versions.
 - **Data accessible.** The demo BM25 corpus (4 public-domain sources, 28 chunks) is committed under [`data/rag/demo/`](data/rag/demo/). No external downloads required. Each source file's SHA256 is recorded in [`data/rag/demo/provenance_manifest.json`](data/rag/demo/provenance_manifest.json); `make seed` re-verifies every hash in <1 second.
-- **One-command setup:** `git clone … && cd CapstoneMealMapSimplified && uv sync && make seed && make test` — 107 tests green, zero API key required.
+- **One-command setup:** `git clone … && cd CapstoneMealMapSimplified && uv sync && make seed && make test` — 118 tests green, zero API key required.
 - **Docker alternative:** `docker compose up -d` brings up the seed job + backend + monitoring dashboard + Streamlit grading app in one command.
 - **CI regression gate.** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs seed → test → eval-offline → tuning sweep on every PR.
 
@@ -114,13 +118,14 @@ docker compose up -d   # seed + backend + dashboard + streamlit grading app
 
 https://elgrassa-capstonemealmapsimplified-demo-uiapp-djyorf.streamlit.app/
 
-[`demo_ui/app.py`](demo_ui/app.py) runs on port 8502 (`make demo`). Five tabs:
+[`demo_ui/app.py`](demo_ui/app.py) runs on port 8502 (`make demo`). Six tabs:
 
 1. **Architecture walkthrough** — a diagram of the pipeline above, each node linked to its module file.
 2. **Query the demo** — runs the full agent against the baked corpus. "Use pre-processed corpus" is on by default; uncheck to upload your own text and exercise the full parse → chunk → index → retrieve → respond flow on it.
 3. **Book parsing playground** — pick a chunking strategy and see the chunks it produces.
 4. **Evaluation laboratory** — pick a ground-truth case, see retrieval output, LLM-as-Judge scoring.
 5. **Parameter tuning sandbox** — move thresholds and authority weights, watch the evidence gate flip supported / fallback / refused.
+6. **Recipe nutrition & household fit** — pick one of the 5 baked recipes, see its structured ingredients, per-serving macros, and a per-member verdict (safe / allergen-conflict / partial-data) for the demo household. Toggle the default `derived/recipes.json` path vs. the live regex parser + canonical-sample matcher to see how the same data is reached either way. Also shows a static sample 7-day plan for the demo household (full weekly plan generation is a production-only feature at [meal-map.app](https://meal-map.app)).
 
 Sidebar shows a live cost budget (session + daily), the hardcoded demo household used for personalization, and a rubric-coverage checklist.
 

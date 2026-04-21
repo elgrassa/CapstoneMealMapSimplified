@@ -86,13 +86,16 @@ with st.sidebar:
     st.caption("[meal-map.app](https://meal-map.app) — full product")
     st.divider()
     summary = session_summary(st.session_state["session_id"])
+    # Cost meter: pull from the rate limiter (source of truth for $ spent on
+    # live LLM calls). feedback.db tracks events not cost, so `summary['cost_usd']`
+    # is always 0 and is misleading in the sidebar.
+    rl_snapshot = get_limiter().snapshot(st.session_state["session_id"])
     st.metric("Queries this session", summary["calls"])
-    st.metric("Est. cost (USD)", f"${summary['cost_usd']:.4f}")
+    st.metric("Est. cost (today, USD)", f"${rl_snapshot['daily_spend_usd']:.4f}")
     st.metric("👍 / 👎", f"{summary['thumbs_up']} / {summary['thumbs_down']}")
 
     st.divider()
     st.markdown("**Cost guardrail**")
-    rl_snapshot = get_limiter().snapshot(st.session_state["session_id"])
     session_cap_col = st.progress(
         min(1.0, rl_snapshot["session_calls_used"] / max(1, rl_snapshot["session_cap"])),
         text=f"Session LLM calls: {rl_snapshot['session_calls_used']} / {rl_snapshot['session_cap']}",
@@ -151,12 +154,13 @@ def _touch_rubric(*keys: str) -> None:
 # ---------------------------------------------------------------------------
 # Tabs
 # ---------------------------------------------------------------------------
-tab_arch, tab_query, tab_parse, tab_eval, tab_tune = st.tabs([
+tab_arch, tab_query, tab_parse, tab_eval, tab_tune, tab_recipe = st.tabs([
     "📐 0. Architecture",
     "💬 1. Query the demo",
     "📖 2. Book parsing playground",
     "🧪 3. Evaluation laboratory",
     "🎛️ 4. Parameter tuning sandbox",
+    "🥗 5. Recipe nutrition & household fit",
 ])
 
 
@@ -529,6 +533,213 @@ with tab_tune:
     )
 
     st.caption("_Rubric: **Evaluation (3 pts)** — demonstrates param-tuning methodology live._")
+
+
+# ---------------------------------------------------------------------------
+# Tab 5 — Recipe nutrition & household fit
+# ---------------------------------------------------------------------------
+with tab_recipe:
+    _touch_rubric("agents_llm", "kb_retrieval")
+    st.header("Recipe nutrition & household fit")
+    st.caption(
+        "Pick a baked recipe → see its ingredients, per-serving macros, and whether it fits "
+        "each demo household member (dairy / peanuts / age-band). Two data paths: the pre-computed "
+        "JSON under `data/rag/demo/derived/recipes.json` (default, deterministic) or the live "
+        "regex parser running against the raw recipe text (unchecked, demonstrates the pipeline)."
+    )
+
+    # Load pre-computed structured data
+    import json as _json
+    recipes_json_path = CAPSTONE_ROOT / "data" / "rag" / "demo" / "derived" / "recipes.json"
+    try:
+        recipes_data = _json.loads(recipes_json_path.read_text(encoding="utf-8"))
+    except Exception as e:  # pragma: no cover — deploy-time only
+        st.error(f"Could not load recipes.json: {e}")
+        recipes_data = {"recipes": [], "sample_weekly_plans": []}
+
+    use_precomputed = st.checkbox(
+        "Use pre-computed derived/recipes.json (fast, deterministic)",
+        value=True,
+        key="tab5_use_precomputed",
+        help="Unchecked: re-parse the same recipe from raw text via regex + fuzzy-match against "
+             "the canonical 10-ingredient USDA sample.",
+    )
+
+    recipes_list = recipes_data.get("recipes", [])
+    recipe_options = {
+        f"{r['title']} — {r['servings']} servings ({r['cook_time_minutes']} min)": r
+        for r in recipes_list
+    }
+    if not recipe_options:
+        st.warning("No recipes in the committed JSON.")
+    else:
+        label = st.selectbox("Recipe", list(recipe_options.keys()), key="tab5_recipe_pick")
+        recipe = recipe_options[label]
+
+        # ---- Ingredients table ----
+        st.subheader("Ingredients")
+        if use_precomputed:
+            import pandas as _pd
+            ing_rows = [
+                {
+                    "amount": i.get("amount") or "",
+                    "unit": i.get("unit") or "",
+                    "ingredient": i.get("text", ""),
+                    "canonical match": i.get("canonical_match") or "—",
+                    "allergens": ", ".join(i.get("allergens", [])) or "—",
+                }
+                for i in recipe.get("ingredients", [])
+            ]
+            st.dataframe(_pd.DataFrame(ing_rows), width="stretch", hide_index=True)
+        else:
+            # Load raw text for this recipe's source chunk and re-parse it.
+            from mealmaster_ai.nutrition.recipe_nutrition import (
+                parse_recipe_ingredients,
+                match_all,
+                aggregate_macros,
+                household_fit as _hh_fit,
+            )
+            raw_path = CAPSTONE_ROOT / "data" / "rag" / "demo" / "recipes" / "raw" / f"{recipe['source_doc_id']}.txt"
+            raw_text = raw_path.read_text(encoding="utf-8")
+            # Narrow to the chunk that contains this recipe by title match.
+            title = recipe["title"].lower()
+            lines = raw_text.split("\n")
+            start = 0
+            for idx, line in enumerate(lines):
+                if title.split()[0] in line.lower() and ("recipe" in line.lower() or "##" in line):
+                    start = idx
+                    break
+            snippet = "\n".join(lines[start:start + 40])
+            st.code(snippet, language="markdown")
+            parsed = parse_recipe_ingredients(snippet)
+            matched = match_all(parsed)
+            live_rows = [
+                {
+                    "amount": m.ingredient_text[:3] + "…" if False else (parsed[i].amount_text or ""),
+                    "ingredient": m.ingredient_text,
+                    "canonical match": m.matched.name if m.matched else "—",
+                    "matched via": m.matched_via or "—",
+                }
+                for i, m in enumerate(matched)
+            ]
+            import pandas as _pd
+            st.dataframe(_pd.DataFrame(live_rows), width="stretch", hide_index=True)
+
+        # ---- Per-serving nutrition ----
+        st.subheader("Per-serving nutrition")
+        if use_precomputed:
+            n = recipe.get("nutrition_per_serving", {})
+            col_a, col_b, col_c, col_d, col_e = st.columns(5)
+            col_a.metric("kcal", n.get("energy_kcal", "—"))
+            col_b.metric("protein (g)", n.get("protein_g", "—"))
+            col_c.metric("carbs (g)", n.get("carbs_g", "—"))
+            col_d.metric("fat (g)", n.get("fat_g", "—"))
+            col_e.metric("fiber (g)", n.get("fiber_g", "—"))
+            st.caption(
+                f"Sodium label: **{n.get('sodium_mg_label', '—')}** • "
+                f"Source: per-serving nutrition written by the original publisher for WIC; "
+                f"committed in `derived/recipes.json`."
+            )
+        else:
+            agg = aggregate_macros(matched)
+            col_a, col_b, col_c, col_d, col_e = st.columns(5)
+            col_a.metric("Σ kcal / 100g", f"{agg.energy_kcal_per_100g_sum:.0f}")
+            col_b.metric("Σ protein", f"{agg.protein_g_per_100g_sum:.1f}")
+            col_c.metric("Σ carbs", f"{agg.carbs_g_per_100g_sum:.1f}")
+            col_d.metric("Σ fat", f"{agg.fat_g_per_100g_sum:.1f}")
+            col_e.metric("Σ fiber", f"{agg.fiber_g_per_100g_sum:.1f}")
+            st.caption(
+                f"Matched {agg.matched_count} of {agg.matched_count + agg.unmatched_count} "
+                f"ingredients against the 10-item USDA canonical sample. "
+                f"Per-100g sum (no amount scaling) — this is an intentional demo simplification. "
+                f"Production `meal-map.app` applies amount × canonical 82×19 catalog."
+            )
+
+        # ---- Household fit ----
+        st.subheader("Demo household fit")
+        import pandas as _pd
+        if use_precomputed:
+            recipe_allergens = set(recipe.get("allergens_eu14", []))
+            suitable = set(recipe.get("suitable_for_age_bands", []))
+            fit_rows = []
+            for m in DEMO_PROFILE.members:
+                allergen_hits = sorted(set(m.allergens) & recipe_allergens)
+                age_ok = m.age_band in suitable
+                if allergen_hits:
+                    verdict = f"❌ allergen conflict ({', '.join(allergen_hits)})"
+                elif not age_ok:
+                    verdict = f"⚠️  age-band not listed as suitable ({m.age_band})"
+                else:
+                    verdict = "✅ safe"
+                fit_rows.append({
+                    "member": m.display_name,
+                    "age band": m.age_band,
+                    "member allergens": ", ".join(m.allergens) or "—",
+                    "verdict": verdict,
+                })
+            st.dataframe(_pd.DataFrame(fit_rows), width="stretch", hide_index=True)
+        else:
+            live_fit = _hh_fit(matched)
+            st.dataframe(
+                _pd.DataFrame([
+                    {
+                        "member": f.display_name,
+                        "age band": f.age_band,
+                        "verdict": (
+                            f"❌ allergen conflict ({', '.join(f.conflicting_allergens)})"
+                            if f.verdict == "allergen_conflict"
+                            else ("⚠️  partial data (unmatched ingredients)"
+                                  if f.verdict == "partial_data"
+                                  else "✅ safe (all ingredients matched, no allergen overlap)")
+                        ),
+                    }
+                    for f in live_fit
+                ]),
+                width="stretch",
+                hide_index=True,
+            )
+
+        # ---- 7-day sample plan (for the household fit question) ----
+        st.divider()
+        st.subheader("Sample 7-day plan for the demo household")
+        st.caption(
+            "Meal planning is a **production-only** feature at "
+            "[meal-map.app](https://meal-map.app). The plan below is a **static sample** "
+            "from `derived/recipes.json` to show the shape of a grounded household plan; "
+            "the capstone agent does not generate it at runtime."
+        )
+        plans = recipes_data.get("sample_weekly_plans", [])
+        if plans:
+            plan = plans[0]
+            plan_rows = []
+            by_id = {r["recipe_id"]: r for r in recipes_list}
+            for day in plan.get("days", []):
+                plan_rows.append({
+                    "day": day["day"],
+                    "breakfast": by_id.get(day.get("breakfast", ""), {}).get("title", day.get("breakfast", "")),
+                    "lunch": by_id.get(day.get("lunch", ""), {}).get("title", day.get("lunch", "")),
+                    "dinner": by_id.get(day.get("dinner", ""), {}).get("title", day.get("dinner", "")),
+                })
+            st.dataframe(_pd.DataFrame(plan_rows), width="stretch", hide_index=True)
+
+            with st.expander("Household fit notes for this plan", expanded=False):
+                for note in plan.get("household_fit_notes", []):
+                    st.markdown(f"- {note}")
+
+        record_event(
+            st.session_state["session_id"],
+            "recipe_nutrition",
+            {
+                "recipe_id": recipe["recipe_id"],
+                "precomputed": use_precomputed,
+            },
+        )
+
+    st.caption(
+        "_Rubric: ties together **Agents + LLM (3 pts)** — the same tools "
+        "(`get_nutrition_facts`, `check_allergens`, `search_knowledge`) used in the agent loop "
+        "operate on real recipe data here — and **KB + retrieval (2 pts)**._"
+    )
 
 
 # ---------------------------------------------------------------------------

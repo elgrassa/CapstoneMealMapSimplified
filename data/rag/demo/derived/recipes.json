@@ -1,0 +1,183 @@
+{
+  "schema_version": "1.0.0",
+  "derived_from": ["utah_wic_recipe_book", "lets_cook_with_kids_ca_wic"],
+  "note": "Structured per-recipe data hand-extracted from the raw text chunks under data/rag/demo/recipes/raw/. Ingredient amounts + canonical matches + per-serving macros + EU-14 allergen groups are pre-computed so Tab 5 of the Streamlit grading app is deterministic. The per-serving nutrition values are also present in the raw WIC texts where the original publication provides them; otherwise they are conservative sample-based estimates.",
+  "recipes": [
+    {
+      "recipe_id": "utah_wic_baked_chicken_with_vegetables",
+      "source_doc_id": "utah_wic_recipe_book",
+      "source_chunk_id": "utah_wic_recipe_book::0000",
+      "title": "Baked Chicken with Vegetables",
+      "servings": 4,
+      "cook_time_minutes": 55,
+      "cuisine": "american",
+      "meal_type": "dinner",
+      "ingredients": [
+        {"amount": "4", "unit": null,         "text": "chicken thighs, skinless",            "canonical_match": null,            "allergens": []},
+        {"amount": "2", "unit": "tablespoons", "text": "olive oil",                            "canonical_match": null,            "allergens": []},
+        {"amount": "1", "unit": "teaspoon",    "text": "garlic powder",                        "canonical_match": null,            "allergens": []},
+        {"amount": "1", "unit": "teaspoon",    "text": "dried thyme",                          "canonical_match": null,            "allergens": []},
+        {"amount": "1/2","unit": "teaspoon",   "text": "black pepper (no added salt)",         "canonical_match": null,            "allergens": []},
+        {"amount": "4", "unit": null,         "text": "carrots, sliced",                      "canonical_match": null,            "allergens": []},
+        {"amount": "1", "unit": "medium",     "text": "onion, chopped",                       "canonical_match": null,            "allergens": []},
+        {"amount": "2", "unit": "medium",     "text": "potatoes, cubed",                      "canonical_match": null,            "allergens": []}
+      ],
+      "nutrition_per_serving": {
+        "energy_kcal": 320,
+        "protein_g": 22,
+        "carbs_g": 28,
+        "fat_g": 12,
+        "fiber_g": 4,
+        "sodium_mg_label": "low"
+      },
+      "allergens_eu14": [],
+      "suitable_for_age_bands": ["toddler_1_3", "child_4_8", "child_9_12", "adolescent_13_18", "adult"],
+      "notes": "family-friendly, low sodium"
+    },
+    {
+      "recipe_id": "utah_wic_low_sodium_pasta_primavera",
+      "source_doc_id": "utah_wic_recipe_book",
+      "source_chunk_id": "utah_wic_recipe_book::0001",
+      "title": "Low-Sodium Pasta Primavera",
+      "servings": 4,
+      "cook_time_minutes": 20,
+      "cuisine": "italian",
+      "meal_type": "dinner",
+      "ingredients": [
+        {"amount": "225", "unit": "g",         "text": "whole-wheat pasta",                    "canonical_match": null,            "allergens": ["gluten"]},
+        {"amount": "1",   "unit": "tablespoon","text": "olive oil",                            "canonical_match": null,            "allergens": []},
+        {"amount": "2",   "unit": "cloves",    "text": "garlic, minced",                       "canonical_match": null,            "allergens": []},
+        {"amount": "2",   "unit": "cups",      "text": "mixed vegetables (bell peppers, zucchini, broccoli)", "canonical_match": "broccoli_raw", "allergens": []},
+        {"amount": "1/4", "unit": "cup",       "text": "low-sodium vegetable broth",           "canonical_match": null,            "allergens": []},
+        {"amount": null,  "unit": null,        "text": "fresh basil, chopped",                 "canonical_match": null,            "allergens": []},
+        {"amount": null,  "unit": null,        "text": "black pepper to taste",                "canonical_match": null,            "allergens": []}
+      ],
+      "nutrition_per_serving": {
+        "energy_kcal": 290,
+        "protein_g": 11,
+        "carbs_g": 55,
+        "fat_g": 5,
+        "fiber_g": 7,
+        "sodium_mg_label": "low"
+      },
+      "allergens_eu14": ["gluten"],
+      "suitable_for_age_bands": ["child_4_8", "child_9_12", "adolescent_13_18", "adult"],
+      "notes": "vegetarian; whole-grain pasta delivers fiber"
+    },
+    {
+      "recipe_id": "utah_wic_quick_bean_soup",
+      "source_doc_id": "utah_wic_recipe_book",
+      "source_chunk_id": "utah_wic_recipe_book::0002",
+      "title": "Quick Bean Soup",
+      "servings": 4,
+      "cook_time_minutes": 30,
+      "cuisine": "american",
+      "meal_type": "dinner",
+      "ingredients": [
+        {"amount": "2",   "unit": "cups",      "text": "cooked white beans (canned, rinsed)",  "canonical_match": "lentils_raw",  "allergens": []},
+        {"amount": "4",   "unit": "cups",      "text": "low-sodium vegetable broth",           "canonical_match": null,           "allergens": []},
+        {"amount": "1",   "unit": null,        "text": "onion, chopped",                       "canonical_match": null,           "allergens": []},
+        {"amount": "2",   "unit": null,        "text": "carrots, diced",                       "canonical_match": null,           "allergens": []},
+        {"amount": "2",   "unit": null,        "text": "celery stalks, diced",                 "canonical_match": null,           "allergens": []},
+        {"amount": "2",   "unit": "tablespoons","text": "olive oil",                           "canonical_match": null,           "allergens": []},
+        {"amount": "1",   "unit": "teaspoon",  "text": "dried oregano",                        "canonical_match": null,           "allergens": []},
+        {"amount": null,  "unit": null,        "text": "black pepper to taste",                "canonical_match": null,           "allergens": []}
+      ],
+      "nutrition_per_serving": {
+        "energy_kcal": 210,
+        "protein_g": 10,
+        "carbs_g": 34,
+        "fat_g": 5,
+        "fiber_g": 9,
+        "sodium_mg_label": "low"
+      },
+      "allergens_eu14": [],
+      "suitable_for_age_bands": ["toddler_1_3", "child_4_8", "child_9_12", "adolescent_13_18", "adult"],
+      "notes": "vegetarian; pair with vitamin C for iron absorption"
+    },
+    {
+      "recipe_id": "ca_wic_banana_oat_pancakes",
+      "source_doc_id": "lets_cook_with_kids_ca_wic",
+      "source_chunk_id": "lets_cook_with_kids_ca_wic::0000",
+      "title": "Banana Oat Pancakes",
+      "servings": 4,
+      "cook_time_minutes": 15,
+      "cuisine": "american",
+      "meal_type": "breakfast",
+      "ingredients": [
+        {"amount": "1",   "unit": null,        "text": "ripe banana, mashed",                  "canonical_match": null,            "allergens": []},
+        {"amount": "1",   "unit": "cup",       "text": "rolled oats, blended into flour",       "canonical_match": "oats_rolled_dry", "allergens": ["gluten"]},
+        {"amount": "1",   "unit": null,        "text": "large egg",                             "canonical_match": "egg_whole_raw",   "allergens": ["eggs"]},
+        {"amount": "3/4", "unit": "cup",       "text": "low-fat milk",                          "canonical_match": null,              "allergens": ["dairy"]},
+        {"amount": "1",   "unit": "teaspoon",  "text": "baking powder",                         "canonical_match": null,              "allergens": []},
+        {"amount": "1/2", "unit": "teaspoon",  "text": "cinnamon",                              "canonical_match": null,              "allergens": []},
+        {"amount": null,  "unit": null,        "text": "cooking oil for the pan",               "canonical_match": null,              "allergens": []}
+      ],
+      "nutrition_per_serving": {
+        "energy_kcal": 170,
+        "protein_g": 6,
+        "carbs_g": 27,
+        "fat_g": 4,
+        "fiber_g": 3,
+        "sodium_mg_label": "low"
+      },
+      "allergens_eu14": ["gluten", "eggs", "dairy"],
+      "suitable_for_age_bands": ["toddler_1_3", "child_4_8", "child_9_12", "adolescent_13_18", "adult"],
+      "notes": "kid-friendly; oats may carry gluten cross-contamination unless certified gluten-free"
+    },
+    {
+      "recipe_id": "ca_wic_veggie_tomato_pasta",
+      "source_doc_id": "lets_cook_with_kids_ca_wic",
+      "source_chunk_id": "lets_cook_with_kids_ca_wic::0001",
+      "title": "Veggie-Loaded Tomato Pasta",
+      "servings": 4,
+      "cook_time_minutes": 25,
+      "cuisine": "italian",
+      "meal_type": "dinner",
+      "ingredients": [
+        {"amount": "225", "unit": "g",         "text": "pasta (wheat or gluten-free)",          "canonical_match": null,            "allergens": ["gluten"]},
+        {"amount": "1",   "unit": "tablespoon","text": "olive oil",                             "canonical_match": null,            "allergens": []},
+        {"amount": "1",   "unit": null,        "text": "onion, finely chopped",                 "canonical_match": null,            "allergens": []},
+        {"amount": "2",   "unit": "cloves",    "text": "garlic, minced",                        "canonical_match": null,            "allergens": []},
+        {"amount": "1",   "unit": null,        "text": "carrot, grated",                        "canonical_match": null,            "allergens": []},
+        {"amount": "1",   "unit": null,        "text": "zucchini, grated",                      "canonical_match": null,            "allergens": []},
+        {"amount": "1",   "unit": "can",       "text": "crushed tomatoes, no salt added",       "canonical_match": null,            "allergens": []},
+        {"amount": "1",   "unit": "teaspoon",  "text": "dried Italian herbs",                   "canonical_match": null,            "allergens": []},
+        {"amount": null,  "unit": null,        "text": "black pepper to taste",                 "canonical_match": null,            "allergens": []}
+      ],
+      "nutrition_per_serving": {
+        "energy_kcal": 310,
+        "protein_g": 10,
+        "carbs_g": 58,
+        "fat_g": 5,
+        "fiber_g": 6,
+        "sodium_mg_label": "low"
+      },
+      "allergens_eu14": ["gluten"],
+      "suitable_for_age_bands": ["child_4_8", "child_9_12", "adolescent_13_18", "adult"],
+      "notes": "vegetarian; swap to gluten-free pasta for celiac-safe version"
+    }
+  ],
+  "sample_weekly_plans": [
+    {
+      "plan_id": "demo_household_7_day_mediterranean_leaning",
+      "household_profile": "DEMO_PROFILE (2 adults + 2 children, dairy/peanut allergens, mediterranean preference, 30-min cook pref)",
+      "days": [
+        {"day": "mon", "breakfast": "ca_wic_banana_oat_pancakes", "lunch": "utah_wic_low_sodium_pasta_primavera", "dinner": "utah_wic_baked_chicken_with_vegetables"},
+        {"day": "tue", "breakfast": "ca_wic_banana_oat_pancakes", "lunch": "utah_wic_quick_bean_soup",           "dinner": "ca_wic_veggie_tomato_pasta"},
+        {"day": "wed", "breakfast": "ca_wic_banana_oat_pancakes", "lunch": "utah_wic_low_sodium_pasta_primavera", "dinner": "utah_wic_baked_chicken_with_vegetables"},
+        {"day": "thu", "breakfast": "ca_wic_banana_oat_pancakes", "lunch": "utah_wic_quick_bean_soup",           "dinner": "ca_wic_veggie_tomato_pasta"},
+        {"day": "fri", "breakfast": "ca_wic_banana_oat_pancakes", "lunch": "utah_wic_low_sodium_pasta_primavera", "dinner": "utah_wic_baked_chicken_with_vegetables"},
+        {"day": "sat", "breakfast": "ca_wic_banana_oat_pancakes", "lunch": "utah_wic_quick_bean_soup",           "dinner": "ca_wic_veggie_tomato_pasta"},
+        {"day": "sun", "breakfast": "ca_wic_banana_oat_pancakes", "lunch": "utah_wic_low_sodium_pasta_primavera", "dinner": "utah_wic_baked_chicken_with_vegetables"}
+      ],
+      "household_fit_notes": [
+        "Adult 2 (dairy allergen): the pancake breakfast contains milk — substitute oat-milk or skip.",
+        "Child 1 (peanut allergen): all 5 demo recipes are peanut-free; safe.",
+        "Child 2 (toddler 1-3): the pasta primavera is outside the WIC toddler-suitable list; substitute with quick bean soup on those nights.",
+        "This is a demo plan. Production meal-map.app plans are personalised per member and re-computed weekly."
+      ],
+      "sourced_from": "sample only; not a dietitian plan"
+    }
+  ]
+}
