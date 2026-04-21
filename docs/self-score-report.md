@@ -1,25 +1,25 @@
 # GitHub Project Evaluation Report
 
 **Project:** https://github.com/elgrassa/CapstoneMealMapSimplified  
-**Generated:** 2026-04-21 22:19:11  
-**Total Score:** 30/35 (85.7%)
+**Generated:** 2026-04-21 22:26:54  
+**Total Score:** 16/35 (45.7%)
 
 ## Summary
 
 | Criteria | Type | Score | Max | Percentage |
 |----------|------|-------|-----|------------|
 | Problem description | Scored | 2 | 2 | 100.0% |
-| Knowledge base and retrieval | Scored | 2 | 2 | 100.0% |
-| Agents and LLM | Scored | 3 | 3 | 100.0% |
-| Code organization | Scored | 2 | 2 | 100.0% |
-| Testing | Scored | 2 | 2 | 100.0% |
+| Knowledge base and retrieval | Scored | 0 | 2 | 0.0% |
+| Agents and LLM | Scored | 0 | 3 | 0.0% |
+| Code organization | Scored | 0 | 2 | 0.0% |
+| Testing | Scored | 0 | 2 | 0.0% |
 | Evaluation | Scored | 3 | 3 | 100.0% |
 | Evaluation bonus points | Checklist | 4 | 4 | 100.0% |
 | Monitoring | Scored | 2 | 2 | 100.0% |
-| Monitoring bonus points | Checklist | 0 | 3 | 0.0% |
-| Reproducibility | Scored | 0 | 2 | 0.0% |
-| Best coding practices | Checklist | 7 | 7 | 100.0% |
-| Additional bonus points | Checklist | 3 | 3 | 100.0% |
+| Monitoring bonus points | Checklist | 3 | 3 | 100.0% |
+| Reproducibility | Scored | 2 | 2 | 100.0% |
+| Best coding practices | Checklist | 0 | 7 | 0.0% |
+| Additional bonus points | Checklist | 0 | 3 | 0.0% |
 
 ## Detailed Results
 
@@ -29,66 +29,55 @@
 **Score:** 2/2 (100.0%)
 
 **Reasoning:**
-The README.md of the repository provides a well-described problem statement that is clear and effectively communicates what the project aims to solve. It outlines the difficulties families face in meal planning concerning nutrition and safety and describes how the MealMaster project addresses these issues by combining nutritional guidance with a deterministic safety layer.
+The README.md and accompanying problem-statement.md files clearly articulate the user pain points regarding meal planning and nutrition, as well as detail the specific solutions the project aims to provide. The explanations of existing tools' shortcomings highlight the need for this project, and the overview of its unique features makes it evident what problems it addresses. Therefore, a score of 2 points is warranted for a well-described problem statement.
 
 **Evidence:**
-- README.md: Problem section
+- README.md
+- docs/problem-statement.md
 
 ### Knowledge base and retrieval
 
 **Type:** Scored  
-**Score:** 2/2 (100.0%)
+**Score:** 0/2 (0.0%)
 
 **Reasoning:**
-The repository implements a robust knowledge base using a RAG (Retrieval-Augmented Generation) approach, which enables the retrieval of recipe and nutrition content from a well-defined knowledge base. It not only establishes the use of a knowledge base but also efficiently evaluates retrieval performance using sophisticated methods like BM25 and hybrid strategies. Furthermore, comprehensive documentation supports understanding and replication of the knowledge retrieval system, including evaluation methodologies and agent integration. The application also incorporates a tiered evidence gate to validate nutrition claims, fulfilling high standards of documentation.
+Evaluation failed: status_code: 429, model_name: gpt-4o-mini, body: {'message': 'Rate limit reached for gpt-4o-mini in organization org-4fhcnESjvaV6aZhN7IMGaFu2 on tokens per min (TPM): Limit 200000, Used 192548, Requested 8218. Please try again in 229ms. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}
 
 **Evidence:**
-- The README states that the project incorporates a RAG agent with a knowledge base: '1. **Retrieves** recipe + nutrition content from a curated 5-collection knowledge base.'
-- Documentation on retrieval methods in `docs/retrieval-evaluation.md` outlines the performance metrics and retrieval strategies employed, such as Hit@k and MRR.
-- `ai/week1-rag/evals/ground_truth_handcrafted.json` contains hand-crafted ground truth cases that the system evaluates against, showing methodical evaluation of retrieval accuracy.
-- The evidence gate logic is detailed in `src/mealmaster_ai/rag/evidence_gate.py`, demonstrating a structured approach to validation of claims.
-- The effectiveness of the retrieval and evidence gate system is evaluated with concrete metrics, outlined in `docs/evaluation-results-baseline.md` demonstrating comprehensive testing and documentation.
+- No specific evidence provided
 
 ### Agents and LLM
 
 **Type:** Scored  
-**Score:** 3/3 (100.0%)
+**Score:** 0/3 (0.0%)
 
 **Reasoning:**
-The repository implements a robust LLM-driven agent using the PydanticAI framework, employing OpenAI's `gpt-4.1-mini`. It features **eight documented tools** enabling various functionalities such as query assessment, knowledge search, allergen checking, and evidence validation. The documented agent's workflow and the integration of these tools fulfill the 'multiple tools' criterion effectively. Additionally, the emphasis on safety measures and evaluation processes supports the rigorous use of LLMs, assigning it the highest score for the 'Agents and LLM' criteria.
+Evaluation failed: status_code: 429, model_name: gpt-4o-mini, body: {'message': 'Rate limit reached for gpt-4o-mini in organization org-4fhcnESjvaV6aZhN7IMGaFu2 on tokens per min (TPM): Limit 200000, Used 192506, Requested 8034. Please try again in 162ms. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}
 
 **Evidence:**
-- README.md: **LLM-driven nutrition assistant** and detailed pipeline architecture.
-- docs/agent-tools.md: Contains descriptions of 8 documented tools used by the agent.
-- README.md: LLM agent (PydanticAI with `gpt-4.1-mini`) with **8 documented tools**.
-- SESSION_STATUS.md: Table confirming maximum score of 3 for Agents and LLM.
+- No specific evidence provided
 
 ### Code organization
 
 **Type:** Scored  
-**Score:** 2/2 (100.0%)
+**Score:** 0/2 (0.0%)
 
 **Reasoning:**
-The code is organized in a clear Python project structure with a well-defined source layout in the `src`, `backend`, and `data` directories. The README.md contains sufficient information to understand the purpose and organization of each component, as well as a specific section detailing the code structure. Additionally, the presence of multiple directories and files indicates a clear separation of concerns within the project, which supports good code organization principles. The repository does contain some Jupyter notebooks, but they are not the sole focus and the main application is structured accordingly.
+Evaluation failed: status_code: 429, model_name: gpt-4o-mini, body: {'message': 'Rate limit reached for gpt-4o-mini in organization org-4fhcnESjvaV6aZhN7IMGaFu2 on tokens per min (TPM): Limit 200000, Used 193568, Requested 8269. Please try again in 551ms. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}
 
 **Evidence:**
-- README.md clearly describes the project structure including sections for Code Organization, Setup, and Architecture.
-- The file tree is clearly detailed in the README, showing a separation of files and functions (e.g., `src/mealmaster_ai/`, `backend/`, `data/`, etc.).
-- Citing the structure such as core functionality in the `src/`, services in `backend/`, and documentation in `docs/`, all contributing to a well-organized codebase.
+- No specific evidence provided
 
 ### Testing
 
 **Type:** Scored  
-**Score:** 2/2 (100.0%)
+**Score:** 0/2 (0.0%)
 
 **Reasoning:**
-The repository contains a comprehensive suite of both unit tests and judge tests. The unit tests are located in the `tests/unit/` directory and include specialized tests for various components of the agent and validation layers, totaling over 50 tests. The `tests/judge/` directory contains tests designed to evaluate the agent's performance against mock LLM responses. Furthermore, the repository includes clear documentation and instructions in the README on how to run these tests using the `make test` command, which runs both unit and judge tests together. This structured and detailed approach to testing fulfills the criteria for complete testing documentation and functionality, resulting in a score of 2 points.
+Evaluation failed: status_code: 429, model_name: gpt-4o-mini, body: {'message': 'Rate limit reached for gpt-4o-mini in organization org-4fhcnESjvaV6aZhN7IMGaFu2 on tokens per min (TPM): Limit 200000, Used 194305, Requested 6907. Please try again in 363ms. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}
 
 **Evidence:**
-- README.md: Section on Testing with instructions on `make test`
-- tests/unit/ directory contains multiple unit test files
-- tests/judge/ directory contains judge tests
-- tests/streamlit/ directory for app tests
+- No specific evidence provided
 
 ### Evaluation
 
@@ -96,15 +85,12 @@ The repository contains a comprehensive suite of both unit tests and judge tests
 **Score:** 3/3 (100.0%)
 
 **Reasoning:**
-The repository demonstrates comprehensive evaluation capabilities, including LLM-based evaluation against a handcrafted ground truth dataset and documentation on tuning parameters. The evaluation methodology and results are clearly documented in various files, including `docs/evaluation-methodology.md` and `docs/evaluation-results-baseline.md`. It also includes multiple aspects of tuning evaluation, showcasing a systematic approach towards refining the model's performance. Therefore, it meets the criteria at the highest level.
+The repository has implemented a comprehensive evaluation system that includes LLM-based evaluation mechanisms, a ground truth dataset, and a well-documented process for tuning parameters. It not only employs a handcrafted ground truth dataset for robust evaluation but also clearly details the approach to evaluate model performance with documentation provided for every aspect of the evaluation methodology.
 
 **Evidence:**
-- README.md
-- docs/evaluation-methodology.md
-- docs/evaluation-results-baseline.md
-- docs/self-score-report.md
-- ai/week1-rag/evals/llm_judge.py
-- scripts/tuning_experiments.py
+- README.md contains an overview of the evaluation harness and LLM-based evaluation methods.
+- The evaluation methodology is specified in docs/evaluation-methodology.md and is complemented by the results documented in docs/evaluation-results-baseline.md.
+- The repo incorporates various tuning strategies for parameters, which are discussed in the scripts/tuning_experiments.py and further documented in the self-score report.
 
 ### Evaluation bonus points
 
@@ -112,13 +98,12 @@ The repository demonstrates comprehensive evaluation capabilities, including LLM
 **Score:** 4/4 (100.0%)
 
 **Reasoning:**
-Both items are completed. The repository has a hand-crafted ground truth dataset as specified in `ai/week1-rag/evals/ground_truth_handcrafted.json`, which is detailed in the README, including reasons for choosing hand-crafted over LLM-generated. Additionally, the `notebooks/60_manual_evaluation.ipynb` file documents a thorough manual evaluation process against the ground truth dataset, including a robust scoring system and protocol. Thus, both evaluation criteria have been satisfied.
+Both criteria are satisfied by the documentation and files present in the repository. Item 0 is met as there is a hand-crafted ground truth dataset, as evidenced by the content of the 'ai/week1-rag/evals/ground_truth_handcrafted.json' file. This dataset is detailed and explicitly states it is hand-crafted, with a documented methodology available in 'docs/evaluation-methodology.md'. Item 1 is also satisfied as the manual evaluation against the ground truth dataset is outlined in 'notebooks/60_manual_evaluation.ipynb', containing a well-defined protocol for human evaluation alongside scoring mechanisms.
 
 **Evidence:**
-- ai/week1-rag/evals/ground_truth_handcrafted.json
-- notebooks/60_manual_evaluation.ipynb
-- README.md
-- docs/evaluation-methodology.md
+- ai/week1-rag/evals/ground_truth_handcrafted.json contains a detailed description of the hand-crafted dataset.
+- docs/evaluation-methodology.md outlines the ground truth construction and explains why it is hand-crafted.
+- notebooks/60_manual_evaluation.ipynb documents the human evaluation protocol against the ground truth.
 
 ### Monitoring
 
@@ -126,72 +111,58 @@ Both items are completed. The repository has a hand-crafted ground truth dataset
 **Score:** 2/2 (100.0%)
 
 **Reasoning:**
-The repository implements a monitoring solution with a Streamlit dashboard that displays metrics and user interactions, documents the processes for accessing and interpreting logs, and provides clear steps for setting it up. Furthermore, it includes a mechanism to convert user feedback into ground-truth training data, demonstrating a comprehensive monitoring strategy. It meets all criteria for a full score of 2 points.
+The repository has implemented a comprehensive monitoring solution that collects logs, provides a Streamlit dashboard for visualizing the metrics, and documents the processes to access and understand the logs. Specifically, the dashboard displays important metrics such as agent call count, average cost, average latency, and user feedback through thumbs-up/thumbs-down ratings. The monitoring setup includes a mechanism to convert user feedback into training data, further enhancing its auditing capabilities. This setup is clearly documented in the README files, specifically within `monitoring/README.md`, making it easy to follow and understand how to use the monitoring features. Hence, the repository meets all the criteria required for the maximum score.
 
 **Evidence:**
-- monitoring/README.md
-- monitoring/dashboard.py
-- monitoring/feedback.py
-- monitoring/logs_to_gt.py
-- README.md
+- `monitoring/README.md`: This file describes the setup, how logs flow, and mentions the integration with the dashboard.
+- `monitoring/dashboard.py`: A Streamlit dashboard that reads JSONL logs and SQLite feedback data, presenting it visually on port 8501.
+- `monitoring/logs_to_gt.py`: Converts user feedback into ground-truth training data, showcasing the transformation of logs into actionable insights.
 
 ### Monitoring bonus points
-
-**Type:** Checklist  
-**Score:** 0/3 (0.0%)
-
-**Reasoning:**
-Evaluation failed: status_code: 429, model_name: gpt-4o-mini, body: {'message': 'Rate limit reached for gpt-4o-mini in organization org-4fhcnESjvaV6aZhN7IMGaFu2 on tokens per min (TPM): Limit 200000, Used 200000, Requested 673. Please try again in 201ms. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}
-
-**Evidence:**
-- No specific evidence provided
-
-### Reproducibility
-
-**Type:** Scored  
-**Score:** 0/2 (0.0%)
-
-**Reasoning:**
-Evaluation failed: status_code: 429, model_name: gpt-4o-mini, body: {'message': 'Rate limit reached for gpt-4o-mini in organization org-4fhcnESjvaV6aZhN7IMGaFu2 on tokens per min (TPM): Limit 200000, Used 200000, Requested 704. Please try again in 211ms. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}
-
-**Evidence:**
-- No specific evidence provided
-
-### Best coding practices
-
-**Type:** Checklist  
-**Score:** 7/7 (100.0%)
-
-**Reasoning:**
-The repository demonstrates best coding practices with thorough implementation of Docker containerization, dependency management, a comprehensive Makefile, and CI/CD integration for testing and deployment. Each checklist item is substantiated by the presence of specific files and practices: 
-
-1. **Containerization:** Docker is utilized via Dockerfile and docker-compose.yml, facilitating dependency management and environment replication.
-2. **docker-compose up:** The docker-compose.yml file is configured to spin up all necessary services (seed, backend, dashboard, demo_ui) effectively.
-3. **Makefile:** A Makefile exists that simplifies running various tasks, including installing dependencies, seeding data, testing, and running evaluations.
-4. **Dependency Management:** The package manager UV is utilized, and dependencies are defined clearly in pyproject.toml.
-5. **CI/CD Integration:** The project utilizes GitHub Actions to run tests, evaluate, and manage deployments automatically, ensuring code quality and streamlined deployment processes.
-
-**Evidence:**
-- Dockerfile
-- docker-compose.yml
-- Makefile
-- pyproject.toml
-- README.md
-
-### Additional bonus points
 
 **Type:** Checklist  
 **Score:** 3/3 (100.0%)
 
 **Reasoning:**
-The repository has a Streamlit UI available for local and production environments, fulfilling the requirement for a UI for the agent (Item 0). Additionally, the application is deployed to the cloud at the URL https://meal-map.app, meeting the criteria for cloud deployment (Item 1).
+The repository effectively collects user feedback through a SQLite database and records events, including thumbs-up/down inputs which validate user satisfaction. This directly satisfies item 0 of the checklist. Furthermore, it automates the conversion of thumbs-up feedback into ground truth cases, allowing for evaluations based on logged data, fulfilling item 1 of the checklist as well.
 
 **Evidence:**
-- The production UI at [meal-map.app](https://meal-map.app) runs the full family-setup → weekly-plan → shopping → pantry → nutrition-tracking loop (README.md line 26).
-- Streamlit demo UI on :8502 (5 tabs, make demo) + terminal CLI (ai/week1-rag/cli/) + production web at [meal-map.app](https://meal-map.app) (README.md line 394).
-- Streamlit Community Cloud deployment to host the demo at a shareable URL (deployment.md line 7).
+- monitoring/README.md: Feedback bonus (1 pt) documented
+- monitoring/feedback.py: Implements feedback collection through SQLite
+- monitoring/logs_to_gt.py: Automates the logging of thumbs-up responses into ground truth datasets
 
-## Suggested Improvements
+### Reproducibility
 
-1. Implement monitoring with user feedback collection and/or dashboard
-2. Add clear setup instructions, specify dependency versions, and ensure data accessibility
+**Type:** Scored  
+**Score:** 2/2 (100.0%)
+
+**Reasoning:**
+The repository provides clear and complete instructions for setting up and running the project. The README file specifically outlines steps for cloning the repository, installing dependencies, seeding data, and running the application. Additionally, the project contains a committed demo corpus that is accessible and can be used for testing the functionality. The use of a Makefile simplifies many tasks, ensuring reproducibility. Overall, it meets the criteria for reproducibility as all necessary components are present and documented.
+
+**Evidence:**
+- README.md includes clear instructions: `git clone && cp .env.example .env && uv sync && make seed && make test && make demo`
+- Data is committed and accessible in `data/rag/demo/` with SHA256 provenance.
+- Makefile contains targets for installing dependencies and running the project steps.
+
+### Best coding practices
+
+**Type:** Checklist  
+**Score:** 0/7 (0.0%)
+
+**Reasoning:**
+Evaluation failed: status_code: 429, model_name: gpt-4o-mini, body: {'message': 'Rate limit reached for gpt-4o-mini in organization org-4fhcnESjvaV6aZhN7IMGaFu2 on tokens per min (TPM): Limit 200000, Used 193349, Requested 8592. Please try again in 582ms. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}
+
+**Evidence:**
+- No specific evidence provided
+
+### Additional bonus points
+
+**Type:** Checklist  
+**Score:** 0/3 (0.0%)
+
+**Reasoning:**
+Evaluation failed: status_code: 429, model_name: gpt-4o-mini, body: {'message': 'Rate limit reached for gpt-4o-mini in organization org-4fhcnESjvaV6aZhN7IMGaFu2 on tokens per min (TPM): Limit 200000, Used 187799, Requested 12488. Please try again in 86ms. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}
+
+**Evidence:**
+- No specific evidence provided
+
