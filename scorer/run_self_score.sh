@@ -63,21 +63,29 @@ else
   RUNNER="python3"
 fi
 
-# 3. Run the scorer
+# 3. Run the scorer. Upstream CLI (pinned SHA ac596679):
+#    main.py <repo_url> --criteria <yaml> --output <dir> \
+#      --model-provider openai --model-name gpt-4o-mini --no-cleanup
 mkdir -p "${REPORT_OUT_DIR}"
 echo "[self-score] scoring ${TARGET_REPO} against ${CRITERIA_YAML}"
 (
   cd "${CLONE_DIR}"
-  ${RUNNER} main.py "${TARGET_REPO}" --criteria "${CRITERIA_YAML}" --output-dir "${REPORT_OUT_DIR}" || \
-    ${RUNNER} main.py --repo-url "${TARGET_REPO}" --criteria "${CRITERIA_YAML}" --output-dir "${REPORT_OUT_DIR}" || \
-    ${RUNNER} main.py
+  ${RUNNER} main.py "${TARGET_REPO}" \
+    --criteria "${CRITERIA_YAML}" \
+    --output "${REPORT_OUT_DIR}" \
+    --model-provider openai \
+    --model-name gpt-4o-mini \
+    --no-cleanup
 )
 
-# 4. Locate the newest report the scorer dropped and rename to a stable path
-NEW_REPORT="$(ls -t "${REPORT_OUT_DIR}"/*.md 2>/dev/null | head -n1 || true)"
-if [[ -n "${NEW_REPORT}" && "${NEW_REPORT}" != "${REPORT_OUT_PATH}" ]]; then
+# 4. Locate the newest markdown dropped by the scorer and copy it to the stable path.
+#    Skip self-score-report.md itself (we are overwriting it).
+NEW_REPORT="$(ls -t "${REPORT_OUT_DIR}"/*.md 2>/dev/null | grep -v '/self-score-report\.md$' | head -n1 || true)"
+if [[ -n "${NEW_REPORT}" ]]; then
   cp -f "${NEW_REPORT}" "${REPORT_OUT_PATH}"
   echo "[self-score] canonical report at ${REPORT_OUT_PATH}"
+else
+  echo "[self-score] no new markdown report produced — check scorer output."
 fi
 
 echo "[self-score] done."
