@@ -4,6 +4,12 @@
 
 The full product UI (family setup, weekly plan, shopping, pantry, nutrition tracking) lives at [meal-map.app](https://meal-map.app) and is in active development. The Streamlit app in this repo is **not** the product — it's a grading surface that exercises the retrieval + agent pipeline end-to-end in 5 tabs.
 
+
+<img width="2882" height="2692" alt="215FD3BC-D69B-421E-B74E-4B318712F5D3" src="https://github.com/user-attachments/assets/411ea58a-8608-493b-9572-88f13806daab" />
+<img width="2924" height="2730" alt="7250DD96-9425-4D2B-805A-86ACBB8DD434" src="https://github.com/user-attachments/assets/40f4a7e9-aeac-48d3-b5b3-3be7a63bbfd6" />
+<img width="2918" height="2706" alt="34F69E0F-B324-4AB1-85B1-6C7BF88C6052" src="https://github.com/user-attachments/assets/d9ea35ed-e383-492e-8eda-102f899c1543" />
+<img width="1084" height="724" alt="AA45CC1C-E80F-42EE-B491-E691FF766875_1_105_c" src="https://github.com/user-attachments/assets/1eab19f4-6c6d-44fb-bf6e-a4eae0c43545" />
+
 ---
 
 ## Production UI (meal-map.app)
@@ -104,6 +110,9 @@ docker compose up -d   # seed + backend + dashboard + streamlit grading app
 ---
 
 ## Streamlit app for capstone evaluation
+
+
+https://elgrassa-capstonemealmapsimplified-demo-uiapp-djyorf.streamlit.app/
 
 [`demo_ui/app.py`](demo_ui/app.py) runs on port 8502 (`make demo`). Five tabs:
 
