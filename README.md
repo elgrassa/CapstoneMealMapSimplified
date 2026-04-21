@@ -71,6 +71,38 @@ docker compose up -d   # seed + backend + dashboard + streamlit grading app
 
 ---
 
+## Reproducibility
+
+- **Python pinned.** `pyproject.toml` requires Python `>=3.13,<3.14`.
+- **Dependencies locked.** [`uv.lock`](uv.lock) is committed; `uv sync` gives everyone the same versions.
+- **Data accessible.** The demo BM25 corpus (4 public-domain sources, 28 chunks) is committed under [`data/rag/demo/`](data/rag/demo/). No external downloads required. Each source file's SHA256 is recorded in [`data/rag/demo/provenance_manifest.json`](data/rag/demo/provenance_manifest.json); `make seed` re-verifies every hash in <1 second.
+- **One-command setup:** `git clone … && cd CapstoneMealMapSimplified && uv sync && make seed && make test` — 107 tests green, zero API key required.
+- **Docker alternative:** `docker compose up -d` brings up the seed job + backend + monitoring dashboard + Streamlit grading app in one command.
+- **CI regression gate.** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs seed → test → eval-offline → tuning sweep on every PR.
+
+---
+
+## Best coding practices
+
+| Practice | Evidence |
+|---|---|
+| **Containerization (Docker)** | [`Dockerfile`](Dockerfile) — `python:3.13-slim` base, bakes the demo corpus into the image |
+| **docker-compose all-in-one** | [`docker-compose.yml`](docker-compose.yml) — 4 services (seed, backend, dashboard, streamlit app) with a `service_completed_successfully` gate on `seed` |
+| **Makefile** | [`Makefile`](Makefile) — 13 targets: `install` / `seed` / `test` / `mutmut` / `tune` / `eval-offline` / `eval-live` / `serve` / `dashboard` / `demo` / `docker-up` / `docker-down` / `clean` |
+| **UV + virtual env** | [`pyproject.toml`](pyproject.toml) + [`uv.lock`](uv.lock). Setup uses `uv sync`; the lockfile pins every transitive dep |
+| **CI/CD** | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) — 3 jobs (test, mutation-tests, live-eval). Live-eval is manual-only (`workflow_dispatch`) so PRs stay free |
+
+---
+
+## Additional bonus points
+
+- **Terminal UI** — [`ai/week1-rag/cli/week1-meal-query-agent.py`](ai/week1-rag/cli/week1-meal-query-agent.py) runs the full agent from a single CLI call: `python3 ai/week1-rag/cli/week1-meal-query-agent.py "What is the RDA for vitamin D?"`.
+- **Web UI (capstone grading)** — [`demo_ui/app.py`](demo_ui/app.py) is a Streamlit app built for evaluation: 5 tabs with live parameter tuning. `make demo` opens it on `http://localhost:8502`.
+- **Web UI (production)** — the full React product at [meal-map.app](https://meal-map.app) — see the screenshot grid above.
+- **Cloud deployment** — the Streamlit grading app deploys to Streamlit Community Cloud from this repo (free tier, public repos). Setup: [`docs/deployment.md`](docs/deployment.md). Production React UI at [meal-map.app](https://meal-map.app) is on a separate stack (Base44).
+
+---
+
 ## Streamlit app for capstone evaluation
 
 [`demo_ui/app.py`](demo_ui/app.py) runs on port 8502 (`make demo`). Five tabs:

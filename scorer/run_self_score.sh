@@ -69,21 +69,51 @@ fi
 # criteria getting 'Evaluation failed: rate_limit_exceeded' with mini. gpt-4o
 # has a 10M TPM limit and costs ~4x more (~$0.30 vs ~$0.08 per run), which is
 # still well within the capstone budget for a manual-only workflow.
+#
+# Wrapped in a 3-attempt retry loop with 30s backoff so a one-off 429 doesn't
+# sink the whole run. The scorer returns non-zero on any per-criterion failure
+# (even if most criteria passed), so we also check the output report for the
+# 'rate_limit_exceeded' marker and retry only when that's the cause.
 SCORER_MODEL="${SCORER_MODEL:-gpt-4o}"
+SCORER_MAX_ATTEMPTS="${SCORER_MAX_ATTEMPTS:-3}"
+SCORER_RETRY_BACKOFF_S="${SCORER_RETRY_BACKOFF_S:-30}"
+
 mkdir -p "${REPORT_OUT_DIR}"
 echo "[self-score] scoring ${TARGET_REPO} against ${CRITERIA_YAML} with ${SCORER_MODEL}"
-(
-  cd "${CLONE_DIR}"
-  ${RUNNER} main.py "${TARGET_REPO}" \
-    --criteria "${CRITERIA_YAML}" \
-    --output "${REPORT_OUT_DIR}" \
-    --model-provider openai \
-    --model-name "${SCORER_MODEL}" \
-    --no-cleanup
-)
+
+SCORER_EXIT=1
+for attempt in $(seq 1 "${SCORER_MAX_ATTEMPTS}"); do
+  echo "[self-score] attempt ${attempt}/${SCORER_MAX_ATTEMPTS}"
+  (
+    cd "${CLONE_DIR}"
+    ${RUNNER} main.py "${TARGET_REPO}" \
+      --criteria "${CRITERIA_YAML}" \
+      --output "${REPORT_OUT_DIR}" \
+      --model-provider openai \
+      --model-name "${SCORER_MODEL}" \
+      --no-cleanup
+  ) && SCORER_EXIT=0 || SCORER_EXIT=$?
+
+  # Look for a fresh markdown report (skip the stable-path one).
+  NEW_REPORT="$(ls -t "${REPORT_OUT_DIR}"/*.md 2>/dev/null | grep -v '/self-score-report\.md$' | head -n1 || true)"
+
+  if [[ ${SCORER_EXIT} -eq 0 ]] && [[ -n "${NEW_REPORT}" ]]; then
+    if grep -q 'rate_limit_exceeded' "${NEW_REPORT}"; then
+      echo "[self-score] rate-limit hit on at least one criterion — retry after ${SCORER_RETRY_BACKOFF_S}s"
+      rm -f "${NEW_REPORT}"
+      sleep "${SCORER_RETRY_BACKOFF_S}"
+      continue
+    fi
+    break
+  fi
+
+  if [[ ${attempt} -lt ${SCORER_MAX_ATTEMPTS} ]]; then
+    echo "[self-score] scorer failed (exit ${SCORER_EXIT}) — retry after ${SCORER_RETRY_BACKOFF_S}s"
+    sleep "${SCORER_RETRY_BACKOFF_S}"
+  fi
+done
 
 # 4. Locate the newest markdown dropped by the scorer and copy it to the stable path.
-#    Skip self-score-report.md itself (we are overwriting it).
 NEW_REPORT="$(ls -t "${REPORT_OUT_DIR}"/*.md 2>/dev/null | grep -v '/self-score-report\.md$' | head -n1 || true)"
 if [[ -n "${NEW_REPORT}" ]]; then
   cp -f "${NEW_REPORT}" "${REPORT_OUT_PATH}"
