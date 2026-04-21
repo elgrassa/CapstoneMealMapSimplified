@@ -45,6 +45,8 @@ query → input guardrails → strict intent → curative-claim check → rate l
       → response validator → structured response + citations
 ```
 
+**Is this RAG?** Yes. Every agent query flows: user question → `search_knowledge` retrieves chunks from the BM25-indexed demo corpus (4 public-domain sources, 28 chunks) → retrieved chunks are passed to `gpt-4.1-mini` as grounding context → the response cites the `chunk_id` it drew from → an authority-weighted evidence gate classifies confidence as `supported / fallback / refused`. Verifiable live in **Tab 1** (`Query the demo`) and **Tab 5** (`Generate plan via the RAG agent`). The static JSON artefacts (`data/rag/demo/derived/*.json`) are a separate, non-RAG path used for deterministic comparison — they're *derived from* the same corpus but serve as an offline fallback for cost-sensitive displays.
+
 - Retrieval — `minsearch` BM25 + sentence-transformer vectors (RRF fused, optional). Full pipeline in [`src/mealmaster_ai/rag/`](src/mealmaster_ai/rag/).
 - Agent — PydanticAI with `gpt-4.1-mini` and 8 documented tools. Falls back to a deterministic path when no API key is set. See [`ai/week1-rag/pydantic_agent.py`](ai/week1-rag/pydantic_agent.py) and [`docs/agent-tools.md`](docs/agent-tools.md).
 - Evidence gate — authority-weighted top-score check with safety escalation. Source: [`evidence_gate.py`](src/mealmaster_ai/rag/evidence_gate.py).

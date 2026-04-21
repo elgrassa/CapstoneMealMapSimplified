@@ -210,7 +210,7 @@ flowchart LR
     st.divider()
     loaded = _bootstrap_indexes()
     st.success(f"Indexes loaded: {loaded}")
-    with st.expander("See the 8 tools", expanded=False):
+    with st.expander("See the 8 tools (click to collapse)", expanded=True):
         for name, fn in TOOL_FUNCTIONS.items():
             doc = (fn.__doc__ or "").strip().split("\n")[0]
             st.markdown(f"**`{name}`** — {doc}")
@@ -699,14 +699,15 @@ with tab_recipe:
                 hide_index=True,
             )
 
-        # ---- 7-day sample plan (for the household fit question) ----
+        # ---- 7-day sample plan (static JSON) ----
         st.divider()
-        st.subheader("Sample 7-day plan for the demo household")
+        st.subheader("Sample 7-day plan for the demo household (static, JSON-sourced)")
         st.caption(
-            "Meal planning is a **production-only** feature at "
-            "[meal-map.app](https://meal-map.app). The plan below is a **static sample** "
-            "from `derived/recipes.json` to show the shape of a grounded household plan; "
-            "the capstone agent does not generate it at runtime."
+            "A **static committed plan** from `derived/recipes.json`. Built by hand so every "
+            "meal is safe for all 4 household members *by construction* — no per-member "
+            "substitutions needed. Production weekly-plan generation is at "
+            "[meal-map.app](https://meal-map.app). For the RAG-grounded alternative path, "
+            "use the **'Generate plan via the RAG agent'** button below."
         )
         plans = recipes_data.get("sample_weekly_plans", [])
         if plans:
@@ -722,9 +723,78 @@ with tab_recipe:
                 })
             st.dataframe(_pd.DataFrame(plan_rows), width="stretch", hide_index=True)
 
-            with st.expander("Household fit notes for this plan", expanded=False):
+            with st.expander("Construction rules (why these 4 recipes)", expanded=False):
+                for rule in plan.get("construction_rules", []):
+                    st.markdown(f"- {rule}")
+                excluded = plan.get("recipes_excluded_and_why", [])
+                if excluded:
+                    st.markdown("**Excluded by construction:**")
+                    for e in excluded:
+                        st.markdown(f"- `{e['recipe_id']}` — {e['reason']}")
+
+            with st.expander("Household fit notes for this plan", expanded=True):
                 for note in plan.get("household_fit_notes", []):
                     st.markdown(f"- {note}")
+
+        # ---- RAG-based plan generation (honest answer to "is this RAG?") ----
+        st.divider()
+        st.subheader("Generate plan via the RAG agent (live retrieval + LLM)")
+        st.caption(
+            "**Yes, this is RAG.** Click below to trigger `run_agent()` with a "
+            "plan-generation query. The agent calls `search_knowledge` (BM25 over the "
+            "indexed recipes + nutrition_science collections), feeds retrieved chunks "
+            "as context to `gpt-4.1-mini`, and returns a response grounded in citations. "
+            "Counts against the cost guardrail."
+        )
+        rag_plan_query = st.text_input(
+            "Plan request",
+            value=(
+                "Suggest 3 dinner recipes from the demo corpus that avoid dairy and peanuts "
+                "and are suitable for a toddler (age 1-3). Cite the specific chunk IDs."
+            ),
+            key="tab5_rag_plan_query",
+        )
+        if st.button("Generate plan via RAG agent", key="tab5_rag_plan_btn"):
+            cfg = AgentConfig.from_env()
+            with st.spinner("Retrieving recipes + composing plan…"):
+                t0 = time.time()
+                response = run_agent(rag_plan_query, cfg, session_id=st.session_state["session_id"])
+                elapsed_ms = int((time.time() - t0) * 1000)
+
+            tier_color = {"supported": "success", "fallback": "warning", "refused": "error"}.get(
+                response.evidence_tier, "info"
+            )
+            getattr(st, tier_color)(
+                f"**Evidence tier:** {response.evidence_tier}  •  confidence: {response.confidence:.3f}  •  {elapsed_ms} ms"
+            )
+            st.markdown("#### RAG-generated plan")
+            st.write(response.answer)
+
+            if response.citations:
+                st.markdown("**Citations (proof of retrieval):**")
+                for c in response.citations:
+                    st.markdown(
+                        f"- `{c.chunk_id}` from **{c.source_title}** "
+                        f"(collection `{c.collection}`, score {c.score:.3f}, authority {c.authority_level})"
+                    )
+            else:
+                st.caption("No citations returned (response may be from the deterministic fallback path).")
+
+            if response.tool_calls:
+                with st.expander("Tool-call trace", expanded=False):
+                    for tc in response.tool_calls:
+                        st.markdown(f"- `{tc.name}` — `{(tc.result_preview or '')[:140]}`")
+
+            record_event(
+                st.session_state["session_id"],
+                "rag_plan",
+                {
+                    "query": rag_plan_query[:100],
+                    "tier": response.evidence_tier,
+                    "confidence": response.confidence,
+                    "citation_count": len(response.citations),
+                },
+            )
 
         record_event(
             st.session_state["session_id"],

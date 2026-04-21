@@ -126,6 +126,60 @@
       "notes": "kid-friendly; oats may carry gluten cross-contamination unless certified gluten-free"
     },
     {
+      "recipe_id": "demo_dairy_free_overnight_oats",
+      "source_doc_id": "demo_added_for_capstone",
+      "source_chunk_id": null,
+      "title": "Dairy-Free Overnight Oats with Banana",
+      "servings": 2,
+      "cook_time_minutes": 5,
+      "cuisine": "american",
+      "meal_type": "breakfast",
+      "ingredients": [
+        {"amount": "1",   "unit": "cup",       "text": "rolled oats",                           "canonical_match": "oats_rolled_dry", "allergens": ["gluten"]},
+        {"amount": "1",   "unit": "cup",       "text": "oat milk (or other non-dairy milk)",     "canonical_match": null,              "allergens": []},
+        {"amount": "1",   "unit": null,        "text": "ripe banana, sliced",                    "canonical_match": null,              "allergens": []},
+        {"amount": "1",   "unit": "teaspoon",  "text": "cinnamon",                               "canonical_match": null,              "allergens": []}
+      ],
+      "nutrition_per_serving": {
+        "energy_kcal": 260,
+        "protein_g": 7,
+        "carbs_g": 50,
+        "fat_g": 4,
+        "fiber_g": 6,
+        "sodium_mg_label": "low"
+      },
+      "allergens_eu14": ["gluten"],
+      "suitable_for_age_bands": ["toddler_1_3", "child_4_8", "child_9_12", "adolescent_13_18", "adult"],
+      "notes": "Demo-added to the JSON (not from the WIC sources) so the household-fit plan has a universally-safe breakfast. Dairy-free via oat milk; toddler-appropriate texture after soaking. Use certified gluten-free oats for celiac households."
+    },
+    {
+      "recipe_id": "demo_scrambled_eggs_with_vegetables",
+      "source_doc_id": "demo_added_for_capstone",
+      "source_chunk_id": null,
+      "title": "Scrambled Eggs with Vegetables",
+      "servings": 2,
+      "cook_time_minutes": 10,
+      "cuisine": "american",
+      "meal_type": "breakfast",
+      "ingredients": [
+        {"amount": "3",   "unit": null,        "text": "large eggs",                             "canonical_match": "egg_whole_raw",   "allergens": ["eggs"]},
+        {"amount": "1/2", "unit": "cup",       "text": "diced bell pepper and spinach",          "canonical_match": "spinach_raw",     "allergens": []},
+        {"amount": "1",   "unit": "teaspoon",  "text": "olive oil",                              "canonical_match": null,              "allergens": []},
+        {"amount": null,  "unit": null,        "text": "black pepper to taste",                  "canonical_match": null,              "allergens": []}
+      ],
+      "nutrition_per_serving": {
+        "energy_kcal": 220,
+        "protein_g": 14,
+        "carbs_g": 4,
+        "fat_g": 16,
+        "fiber_g": 1,
+        "sodium_mg_label": "low"
+      },
+      "allergens_eu14": ["eggs"],
+      "suitable_for_age_bands": ["toddler_1_3", "child_4_8", "child_9_12", "adolescent_13_18", "adult"],
+      "notes": "Demo-added; dairy-free and peanut-free. Eggs are in the EU-14 list but none of the 4 demo household members list an egg allergy."
+    },
+    {
       "recipe_id": "ca_wic_veggie_tomato_pasta",
       "source_doc_id": "lets_cook_with_kids_ca_wic",
       "source_chunk_id": "lets_cook_with_kids_ca_wic::0001",
@@ -160,24 +214,44 @@
   ],
   "sample_weekly_plans": [
     {
-      "plan_id": "demo_household_7_day_mediterranean_leaning",
-      "household_profile": "DEMO_PROFILE (2 adults + 2 children, dairy/peanut allergens, mediterranean preference, 30-min cook pref)",
+      "plan_id": "demo_household_7_day_universal_safe",
+      "household_profile": "DEMO_PROFILE (2 adults + 2 children — Adult 2 dairy-allergic, Child 1 peanut-allergic, Child 2 toddler 1-3 — mediterranean preference, 30-min cook pref)",
+      "construction_rules": [
+        "Every meal must be dairy-free (Adult 2).",
+        "Every meal must be peanut-free (Child 1).",
+        "Every meal must be listed as suitable_for_age_bands ⊇ {toddler_1_3} (Child 2).",
+        "Cook time per recipe ≤ 30 min (household preference).",
+        "Recipes that violate any of the above are excluded — no per-member substitutions needed."
+      ],
+      "recipes_eligible_by_construction": [
+        "utah_wic_baked_chicken_with_vegetables",
+        "utah_wic_quick_bean_soup",
+        "demo_dairy_free_overnight_oats",
+        "demo_scrambled_eggs_with_vegetables"
+      ],
+      "recipes_excluded_and_why": [
+        {"recipe_id": "ca_wic_banana_oat_pancakes", "reason": "contains milk (dairy allergen — Adult 2)"},
+        {"recipe_id": "utah_wic_low_sodium_pasta_primavera", "reason": "not listed as toddler_1_3 suitable"},
+        {"recipe_id": "ca_wic_veggie_tomato_pasta", "reason": "not listed as toddler_1_3 suitable"}
+      ],
       "days": [
-        {"day": "mon", "breakfast": "ca_wic_banana_oat_pancakes", "lunch": "utah_wic_low_sodium_pasta_primavera", "dinner": "utah_wic_baked_chicken_with_vegetables"},
-        {"day": "tue", "breakfast": "ca_wic_banana_oat_pancakes", "lunch": "utah_wic_quick_bean_soup",           "dinner": "ca_wic_veggie_tomato_pasta"},
-        {"day": "wed", "breakfast": "ca_wic_banana_oat_pancakes", "lunch": "utah_wic_low_sodium_pasta_primavera", "dinner": "utah_wic_baked_chicken_with_vegetables"},
-        {"day": "thu", "breakfast": "ca_wic_banana_oat_pancakes", "lunch": "utah_wic_quick_bean_soup",           "dinner": "ca_wic_veggie_tomato_pasta"},
-        {"day": "fri", "breakfast": "ca_wic_banana_oat_pancakes", "lunch": "utah_wic_low_sodium_pasta_primavera", "dinner": "utah_wic_baked_chicken_with_vegetables"},
-        {"day": "sat", "breakfast": "ca_wic_banana_oat_pancakes", "lunch": "utah_wic_quick_bean_soup",           "dinner": "ca_wic_veggie_tomato_pasta"},
-        {"day": "sun", "breakfast": "ca_wic_banana_oat_pancakes", "lunch": "utah_wic_low_sodium_pasta_primavera", "dinner": "utah_wic_baked_chicken_with_vegetables"}
+        {"day": "mon", "breakfast": "demo_dairy_free_overnight_oats",      "lunch": "utah_wic_quick_bean_soup",           "dinner": "utah_wic_baked_chicken_with_vegetables"},
+        {"day": "tue", "breakfast": "demo_scrambled_eggs_with_vegetables", "lunch": "utah_wic_quick_bean_soup",           "dinner": "utah_wic_baked_chicken_with_vegetables"},
+        {"day": "wed", "breakfast": "demo_dairy_free_overnight_oats",      "lunch": "utah_wic_quick_bean_soup",           "dinner": "utah_wic_baked_chicken_with_vegetables"},
+        {"day": "thu", "breakfast": "demo_scrambled_eggs_with_vegetables", "lunch": "utah_wic_quick_bean_soup",           "dinner": "utah_wic_baked_chicken_with_vegetables"},
+        {"day": "fri", "breakfast": "demo_dairy_free_overnight_oats",      "lunch": "utah_wic_quick_bean_soup",           "dinner": "utah_wic_baked_chicken_with_vegetables"},
+        {"day": "sat", "breakfast": "demo_scrambled_eggs_with_vegetables", "lunch": "utah_wic_quick_bean_soup",           "dinner": "utah_wic_baked_chicken_with_vegetables"},
+        {"day": "sun", "breakfast": "demo_dairy_free_overnight_oats",      "lunch": "utah_wic_quick_bean_soup",           "dinner": "utah_wic_baked_chicken_with_vegetables"}
       ],
       "household_fit_notes": [
-        "Adult 2 (dairy allergen): the pancake breakfast contains milk — substitute oat-milk or skip.",
-        "Child 1 (peanut allergen): all 5 demo recipes are peanut-free; safe.",
-        "Child 2 (toddler 1-3): the pasta primavera is outside the WIC toddler-suitable list; substitute with quick bean soup on those nights.",
-        "This is a demo plan. Production meal-map.app plans are personalised per member and re-computed weekly."
+        "✅ Adult 1 (no allergens): every meal in this plan is cleared.",
+        "✅ Adult 2 (dairy-allergic): every meal is dairy-free by construction — the banana pancake recipe was excluded because it contains milk.",
+        "✅ Child 1 (peanut-allergic): all meals are peanut-free; none of the 7 recipes in our demo corpus contain peanuts.",
+        "✅ Child 2 (toddler 1-3): every dinner is listed as toddler-suitable; pasta-based dinners (primavera + tomato pasta) were excluded because they're not marked suitable for this age band.",
+        "Variety caveat: the demo corpus is 7 recipes, so lunch and dinner repeat across the week. The **production system at [meal-map.app](https://meal-map.app)** rotates across 100+ recipes and regenerates weekly.",
+        "This is a **static JSON plan** for demonstration. For an agent-generated plan that uses the RAG pipeline (`search_knowledge` → retrieve → grounded composition), use the 'Generate meal plan via the RAG agent' button above."
       ],
-      "sourced_from": "sample only; not a dietitian plan"
+      "sourced_from": "demo corpus; honest-by-construction plan — not a dietitian recommendation"
     }
   ]
 }
