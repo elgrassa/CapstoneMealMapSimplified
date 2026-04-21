@@ -63,18 +63,22 @@ else
   RUNNER="python3"
 fi
 
-# 3. Run the scorer. Upstream CLI (pinned SHA ac596679):
-#    main.py <repo_url> --criteria <yaml> --output <dir> \
-#      --model-provider openai --model-name gpt-4o-mini --no-cleanup
+# 3. Run the scorer.
+# Use gpt-4o (not gpt-4o-mini) because the scorer fires parallel requests and
+# mini hits its 200k TPM limit on repos our size — two earlier runs showed 5+
+# criteria getting 'Evaluation failed: rate_limit_exceeded' with mini. gpt-4o
+# has a 10M TPM limit and costs ~4x more (~$0.30 vs ~$0.08 per run), which is
+# still well within the capstone budget for a manual-only workflow.
+SCORER_MODEL="${SCORER_MODEL:-gpt-4o}"
 mkdir -p "${REPORT_OUT_DIR}"
-echo "[self-score] scoring ${TARGET_REPO} against ${CRITERIA_YAML}"
+echo "[self-score] scoring ${TARGET_REPO} against ${CRITERIA_YAML} with ${SCORER_MODEL}"
 (
   cd "${CLONE_DIR}"
   ${RUNNER} main.py "${TARGET_REPO}" \
     --criteria "${CRITERIA_YAML}" \
     --output "${REPORT_OUT_DIR}" \
     --model-provider openai \
-    --model-name gpt-4o-mini \
+    --model-name "${SCORER_MODEL}" \
     --no-cleanup
 )
 
