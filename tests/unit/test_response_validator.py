@@ -79,3 +79,26 @@ def test_validate_response_accepts_dict_input():
         "disclaimer_text": None,
     })
     assert v.ok, v.issues
+
+
+def test_validate_response_none_does_not_raise():
+    """Regression pin for v3 TypeError fix — validator must NOT raise on None.
+
+    Root cause of the live-Streamlit `TypeError` on `Generate plan`:
+    `_run_pydantic_ai` could return `None` (when pydantic-ai failed to parse
+    structured output) and `validate_response(None)` used to raise TypeError
+    from `_as_dict` — propagating uncaught out of `run_agent` to Streamlit's
+    call site. Validator must now surface the shape issue, not crash.
+    """
+    v = validate_response(None)
+    assert v.ok is False
+    assert any("shape invalid" in i for i in v.issues), v.issues
+    assert any("NoneType" in i for i in v.issues), v.issues
+
+
+def test_validate_response_unexpected_type_does_not_raise():
+    """Same regression pin — string, list, and bare int inputs all handled gracefully."""
+    for bad in ("a raw string", ["list", "not dict"], 42):
+        v = validate_response(bad)
+        assert v.ok is False
+        assert any("shape invalid" in i for i in v.issues), (bad, v.issues)

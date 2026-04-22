@@ -109,3 +109,70 @@ def test_household_constraint_check_tolerates_unknown_recipe():
 
 def test_extract_recipe_ids_empty_on_plain_text():
     assert _extract_recipe_ids_from_response("Just some nutrition advice without recipe ids.") == []
+
+
+# --- Real-LLM-path hardening (v3 regression pins) ---
+
+
+def test_run_pydantic_ai_raises_typeerror_on_bad_output(monkeypatch):
+    """v3 regression pin — uncaught TypeError on live Streamlit.
+
+    If pydantic-ai hands back a non-CapstoneRAGResponse output (e.g. None when
+    structured-output validation failed upstream), `_run_pydantic_ai` MUST raise
+    TypeError INSIDE its own frame — NOT silently return a broken shape that
+    later crashes `validate_response`. That way the existing outer
+    try/except in `run_agent` catches it and falls through to the deterministic
+    path cleanly.
+    """
+    import pydantic_agent as pa
+
+    class _FakeResult:
+        output = None  # simulate pydantic-ai returning no structured output
+
+    class _FakeAgent:
+        def __init__(self, *a, **kw):
+            pass
+
+        def tool_plain(self, fn):
+            return fn
+
+        def run_sync(self, query):
+            return _FakeResult()
+
+    fake_module = type("_M", (), {"Agent": _FakeAgent})
+    monkeypatch.setitem(__import__("sys").modules, "pydantic_ai", fake_module)
+
+    cfg = AgentConfig.from_env()
+    try:
+        pa._run_pydantic_ai("any query", cfg)
+    except TypeError as exc:
+        assert "CapstoneRAGResponse" in str(exc)
+        assert "NoneType" in str(exc)
+    else:
+        raise AssertionError("_run_pydantic_ai should have raised TypeError on None output")
+
+
+def test_run_agent_survives_broken_pydantic_ai_return(monkeypatch):
+    """End-to-end — with a real OPENAI_API_KEY env var forcing the real-LLM branch,
+    if `_run_pydantic_ai` raises TypeError, `run_agent` MUST fall through to the
+    deterministic path and return a valid CapstoneRAGResponse. The user must
+    never see an uncaught exception reach the Streamlit call site.
+    """
+    load_all_demo_indexes()
+    import pydantic_agent as pa
+
+    def _broken_pydantic_ai(query, cfg):
+        raise TypeError("simulated: PydanticAI returned NoneType; expected CapstoneRAGResponse.")
+
+    monkeypatch.setattr(pa, "_run_pydantic_ai", _broken_pydantic_ai)
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test-placeholder-not-called")
+
+    response = run_agent(
+        "What are the main functions of dietary fiber?",
+        AgentConfig.from_env(),
+        session_id="regression-v3",
+    )
+    assert isinstance(response, CapstoneRAGResponse)
+    # Deterministic path tagged the failure in reasoning_notes for observability.
+    assert "pydantic-ai failed" in (response.reasoning_notes or "")
+    assert "TypeError" in (response.reasoning_notes or "")

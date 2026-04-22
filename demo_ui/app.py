@@ -588,29 +588,46 @@ with tab_recipe:
         cfg = AgentConfig.from_env()
         with st.spinner("Retrieving recipes → filtering → composing (may auto-rerun on constraint violation)…"):
             t0 = time.time()
-            response = run_agent(
-                rag_plan_query,
-                cfg,
-                session_id=st.session_state["session_id"],
-                enforce_household_constraints=True,
-            )
-            elapsed_ms = int((time.time() - t0) * 1000)
-        st.session_state["tab5_last_plan"] = {
-            "query": rag_plan_query,
-            "response": response,
-            "elapsed_ms": elapsed_ms,
-        }
-        record_event(
-            st.session_state["session_id"],
-            "rag_plan",
-            {
-                "query": rag_plan_query[:100],
-                "tier": response.evidence_tier,
-                "confidence": response.confidence,
-                "citation_count": len(response.citations),
-                "reran": "reran once" in (response.reasoning_notes or ""),
-            },
-        )
+            try:
+                response = run_agent(
+                    rag_plan_query,
+                    cfg,
+                    session_id=st.session_state["session_id"],
+                    enforce_household_constraints=True,
+                )
+                elapsed_ms = int((time.time() - t0) * 1000)
+                st.session_state["tab5_last_plan"] = {
+                    "query": rag_plan_query,
+                    "response": response,
+                    "elapsed_ms": elapsed_ms,
+                }
+                record_event(
+                    st.session_state["session_id"],
+                    "rag_plan",
+                    {
+                        "query": rag_plan_query[:100],
+                        "tier": response.evidence_tier,
+                        "confidence": response.confidence,
+                        "citation_count": len(response.citations),
+                        "reran": "reran once" in (response.reasoning_notes or ""),
+                    },
+                )
+            except Exception as exc:  # noqa: BLE001 — we want to surface every error here
+                # Streamlit Cloud redacts error messages by default; re-render the
+                # full traceback inside an expander so users / graders can report
+                # bugs with a real stack trace. No user data is included — just
+                # the exception chain.
+                st.error(
+                    "The RAG plan call failed. The deterministic fallback did not run "
+                    "because the error propagated out of `run_agent`. See technical details below."
+                )
+                with st.expander("Technical details (click if reporting a bug)", expanded=False):
+                    st.caption(
+                        "Streamlit Cloud redacts exception messages by default. This expander "
+                        "exposes the full traceback locally so it can be copy-pasted into an issue. "
+                        "The traceback contains no user data beyond the query text already visible above."
+                    )
+                    st.exception(exc)
 
     # Render the last RAG plan (persisted across reruns via session_state)
     prior = st.session_state.get("tab5_last_plan")

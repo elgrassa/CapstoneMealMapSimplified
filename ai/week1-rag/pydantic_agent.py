@@ -213,24 +213,37 @@ def _deterministic_fallback(query: str, cfg: AgentConfig) -> CapstoneRAGResponse
 
 
 def _run_pydantic_ai(query: str, cfg: AgentConfig) -> CapstoneRAGResponse:
-    """Real PydanticAI path — only exercised when pydantic-ai + API key are available."""
-    from pydantic_ai import Agent  # type: ignore
-    from pydantic_ai.models.openai import OpenAIModel  # type: ignore
+    """Real PydanticAI path — only exercised when pydantic-ai + API key are available.
 
-    model = OpenAIModel(cfg.model.replace("openai:", "")) if ":" in cfg.model else cfg.model
+    Uses the pydantic-ai 1.0+ idiom — `Agent(model="openai:gpt-4.1-mini", ...)`
+    with the provider:name string passed directly. Explicitly validates the
+    return shape so any unexpected type raises a `TypeError` INSIDE this
+    function (caught by `run_agent`'s outer `try/except`, which then falls
+    through to the deterministic path cleanly).
+    """
+    from pydantic_ai import Agent  # type: ignore
 
     agent = Agent(
-        model=model,
+        model=cfg.model,  # e.g. "openai:gpt-4.1-mini" — pydantic-ai parses provider:name itself
         system_prompt=SYSTEM_PROMPT,
         output_type=CapstoneRAGResponse,
     )
 
-    # Register tools
-    for name, fn in TOOL_FUNCTIONS.items():
+    # Register tools — `fn.__name__` is used as the tool name by pydantic-ai.
+    for fn in TOOL_FUNCTIONS.values():
         agent.tool_plain(fn)
 
     result = agent.run_sync(query)
-    return result.output if hasattr(result, "output") else result.data
+    # pydantic-ai 1.0+ exposes `.output`; older releases used `.data`. Fall back defensively.
+    output = getattr(result, "output", None)
+    if output is None:
+        output = getattr(result, "data", None)
+    if not isinstance(output, CapstoneRAGResponse):
+        raise TypeError(
+            f"PydanticAI returned {type(output).__name__}; expected CapstoneRAGResponse. "
+            f"Repr: {output!r}"
+        )
+    return output
 
 
 def run_agent(

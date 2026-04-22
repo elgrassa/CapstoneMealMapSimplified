@@ -34,12 +34,27 @@ class ResponseValidation:
 
 
 def _as_dict(response: Any) -> dict[str, Any]:
-    """Accept a Pydantic model or a dict; normalize to dict."""
+    """Accept a Pydantic model, a dict, or — as a fallback — return a synthetic
+    error-shaped dict.
+
+    Never raises. A validator that crashes the whole request pipeline is worse
+    than one that flags an issue. If something upstream hands us `None`, a raw
+    string, or any other unexpected shape, we surface it via a `_shape_error`
+    key the caller then folds into `issues`.
+    """
     if hasattr(response, "model_dump"):
         return response.model_dump()
     if isinstance(response, dict):
         return response
-    raise TypeError(f"response must be a Pydantic model or dict, got {type(response)}")
+    return {
+        "answer": f"(validator received unexpected type: {type(response).__name__})",
+        "evidence_tier": "refused",
+        "confidence": 0.0,
+        "citations": [],
+        "requires_disclaimer": False,
+        "disclaimer_text": None,
+        "_shape_error": f"unexpected response type: {type(response).__name__}",
+    }
 
 
 def validate_response(response: Any) -> ResponseValidation:
@@ -47,6 +62,11 @@ def validate_response(response: Any) -> ResponseValidation:
     data = _as_dict(response)
     issues: list[str] = []
     warnings: list[str] = []
+
+    # Shape error from `_as_dict` — surface as an issue, then keep going so the
+    # caller also sees the tier/confidence/answer checks that fail below.
+    if data.get("_shape_error"):
+        issues.append(f"response shape invalid: {data['_shape_error']}")
 
     tier = data.get("evidence_tier")
     confidence = float(data.get("confidence") or 0.0)
