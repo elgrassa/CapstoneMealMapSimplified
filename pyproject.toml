@@ -1,6 +1,6 @@
 [project]
 name = "mealmaster-capstone-simplified"
-version = "0.1.0"
+version = "0.1.1"
 description = "Simplified capstone submission — nutrition & recipe RAG agent derived from MealMaster (see meal-map.app)"
 requires-python = ">=3.13,<3.14"
 readme = "README.md"

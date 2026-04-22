@@ -31,6 +31,21 @@ sys.path.insert(0, str(CAPSTONE_ROOT / "src"))
 sys.path.insert(0, str(CAPSTONE_ROOT / "ai" / "week1-rag"))
 sys.path.insert(0, str(CAPSTONE_ROOT))
 
+# Streamlit's per-rerun import cache keeps `sys.modules` entries alive for the
+# whole process. On Streamlit Cloud that means a `git pull` delivers fresh
+# source files but the Python process keeps the previous module objects — so
+# edits to `pydantic_agent.py` (including new kwargs on `run_agent`) remain
+# invisible until the VM is fully restarted. Evict the agent-surface modules
+# here so every rerun gets a fresh import. Cheap (~milliseconds) and idempotent.
+for _stale in (
+    "pydantic_agent",
+    "agent_tools_v2",
+    "agent_config",
+    "agent_observability",
+    "structured_models",
+):
+    sys.modules.pop(_stale, None)
+
 from agent_config import AgentConfig  # noqa: E402
 from agent_tools_v2 import (  # noqa: E402
     TOOL_FUNCTIONS,
