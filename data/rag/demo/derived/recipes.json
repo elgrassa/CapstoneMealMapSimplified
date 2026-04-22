@@ -210,6 +210,159 @@
       "allergens_eu14": ["gluten"],
       "suitable_for_age_bands": ["child_4_8", "child_9_12", "adolescent_13_18", "adult"],
       "notes": "vegetarian; swap to gluten-free pasta for celiac-safe version"
+    },
+    {
+      "recipe_id": "demo_lemon_herb_baked_salmon_broccoli",
+      "source_doc_id": "demo_added_for_capstone",
+      "source_chunk_id": "demo_added_for_capstone::0000",
+      "title": "Lemon-Herb Baked Salmon with Broccoli",
+      "servings": 4,
+      "cook_time_minutes": 20,
+      "cuisine": "mediterranean",
+      "meal_type": "dinner",
+      "ingredients": [
+        {"amount": "450", "unit": "g",          "text": "salmon fillets",                    "canonical_match": "salmon_atlantic_raw", "allergens": ["fish"]},
+        {"amount": "2",   "unit": "cups",       "text": "broccoli florets",                  "canonical_match": "broccoli_raw",         "allergens": []},
+        {"amount": "2",   "unit": "tablespoons","text": "olive oil",                         "canonical_match": null,                   "allergens": []},
+        {"amount": "1",   "unit": null,         "text": "lemon, sliced",                     "canonical_match": null,                   "allergens": []},
+        {"amount": "1",   "unit": "teaspoon",   "text": "dried dill",                        "canonical_match": null,                   "allergens": []},
+        {"amount": "1",   "unit": "teaspoon",   "text": "garlic powder",                     "canonical_match": null,                   "allergens": []},
+        {"amount": "1/2", "unit": "teaspoon",   "text": "black pepper",                      "canonical_match": null,                   "allergens": []}
+      ],
+      "nutrition_per_serving": {
+        "energy_kcal": 310,
+        "protein_g": 30,
+        "carbs_g": 6,
+        "fat_g": 18,
+        "fiber_g": 2,
+        "sodium_mg_label": "low"
+      },
+      "allergens_eu14": ["fish"],
+      "suitable_for_age_bands": ["toddler_1_3", "child_4_8", "child_9_12", "adolescent_13_18", "adult"],
+      "notes": "Demo-added. High-protein dinner. Fish allergen present (EU-14) but none of the 4 demo household members list a fish allergy. Toddler portion: deboned + cut small."
+    },
+    {
+      "recipe_id": "demo_lentil_stew_carrots_spinach",
+      "source_doc_id": "demo_added_for_capstone",
+      "source_chunk_id": "demo_added_for_capstone::0002",
+      "title": "Lentil Stew with Carrots and Spinach",
+      "servings": 4,
+      "cook_time_minutes": 30,
+      "cuisine": "mediterranean",
+      "meal_type": "dinner",
+      "ingredients": [
+        {"amount": "1",   "unit": "cup",        "text": "dry lentils, rinsed",               "canonical_match": "lentils_raw",  "allergens": []},
+        {"amount": "3",   "unit": "cups",       "text": "low-sodium vegetable broth",        "canonical_match": null,           "allergens": []},
+        {"amount": "2",   "unit": null,         "text": "carrots, diced",                    "canonical_match": null,           "allergens": []},
+        {"amount": "1",   "unit": null,         "text": "onion, chopped",                    "canonical_match": null,           "allergens": []},
+        {"amount": "2",   "unit": "cups",       "text": "fresh spinach",                     "canonical_match": "spinach_raw",  "allergens": []},
+        {"amount": "2",   "unit": "tablespoons","text": "olive oil",                         "canonical_match": null,           "allergens": []},
+        {"amount": "1",   "unit": "teaspoon",   "text": "ground cumin",                      "canonical_match": null,           "allergens": []},
+        {"amount": "1/2", "unit": "teaspoon",   "text": "black pepper",                      "canonical_match": null,           "allergens": []}
+      ],
+      "nutrition_per_serving": {
+        "energy_kcal": 220,
+        "protein_g": 12,
+        "carbs_g": 32,
+        "fat_g": 5,
+        "fiber_g": 10,
+        "sodium_mg_label": "low"
+      },
+      "allergens_eu14": [],
+      "suitable_for_age_bands": ["toddler_1_3", "child_4_8", "child_9_12", "adolescent_13_18", "adult"],
+      "notes": "Demo-added. High iron (lentils + spinach). Pair with vitamin C source (tomato or citrus) to enhance non-heme iron absorption. Toddler-friendly mash texture."
+    },
+    {
+      "recipe_id": "demo_brown_rice_sweet_potato_black_beans",
+      "source_doc_id": "demo_added_for_capstone",
+      "source_chunk_id": "demo_added_for_capstone::0003",
+      "title": "Brown Rice with Sweet Potato and Black Beans",
+      "servings": 4,
+      "cook_time_minutes": 25,
+      "cuisine": "mediterranean",
+      "meal_type": "lunch",
+      "ingredients": [
+        {"amount": "1",   "unit": "cup",        "text": "brown rice, long-grain",             "canonical_match": "rice_brown_long_grain_raw", "allergens": []},
+        {"amount": "2",   "unit": "cups",       "text": "water",                              "canonical_match": null,                          "allergens": []},
+        {"amount": "1",   "unit": "medium",     "text": "sweet potato, peeled and cubed",     "canonical_match": "sweet_potato_raw",            "allergens": []},
+        {"amount": "1",   "unit": "can",        "text": "black beans, rinsed",                "canonical_match": "lentils_raw",                 "allergens": []},
+        {"amount": "2",   "unit": "tablespoons","text": "olive oil",                          "canonical_match": null,                          "allergens": []},
+        {"amount": "1",   "unit": "teaspoon",   "text": "ground cumin",                       "canonical_match": null,                          "allergens": []},
+        {"amount": "1/2", "unit": "teaspoon",   "text": "smoked paprika",                     "canonical_match": null,                          "allergens": []}
+      ],
+      "nutrition_per_serving": {
+        "energy_kcal": 340,
+        "protein_g": 11,
+        "carbs_g": 60,
+        "fat_g": 6,
+        "fiber_g": 11,
+        "sodium_mg_label": "low"
+      },
+      "allergens_eu14": [],
+      "suitable_for_age_bands": ["toddler_1_3", "child_4_8", "child_9_12", "adolescent_13_18", "adult"],
+      "notes": "Demo-added. Complete plant protein combination (rice + beans). Toddler: cut sweet potato small."
+    },
+    {
+      "recipe_id": "demo_vegetable_egg_fried_rice",
+      "source_doc_id": "demo_added_for_capstone",
+      "source_chunk_id": "demo_added_for_capstone::0005",
+      "title": "Vegetable and Egg Fried Rice",
+      "servings": 4,
+      "cook_time_minutes": 15,
+      "cuisine": "asian",
+      "meal_type": "lunch",
+      "ingredients": [
+        {"amount": "2",   "unit": "cups",       "text": "cooked brown rice (cold, day-old)",  "canonical_match": "rice_brown_long_grain_raw", "allergens": []},
+        {"amount": "2",   "unit": null,         "text": "large eggs, beaten",                  "canonical_match": "egg_whole_raw",               "allergens": ["eggs"]},
+        {"amount": "1/2", "unit": "cup",        "text": "frozen peas",                         "canonical_match": null,                          "allergens": []},
+        {"amount": "2",   "unit": null,         "text": "carrots, diced small",                "canonical_match": null,                          "allergens": []},
+        {"amount": "2",   "unit": "tablespoons","text": "olive oil",                           "canonical_match": null,                          "allergens": []},
+        {"amount": "1",   "unit": "clove",      "text": "garlic, minced",                      "canonical_match": null,                          "allergens": []},
+        {"amount": "1",   "unit": "tablespoon", "text": "low-sodium soy sauce (or tamari)",   "canonical_match": null,                          "allergens": ["gluten"]}
+      ],
+      "nutrition_per_serving": {
+        "energy_kcal": 280,
+        "protein_g": 10,
+        "carbs_g": 42,
+        "fat_g": 8,
+        "fiber_g": 4,
+        "sodium_mg_label": "low"
+      },
+      "allergens_eu14": ["eggs", "gluten"],
+      "suitable_for_age_bands": ["toddler_1_3", "child_4_8", "child_9_12", "adolescent_13_18", "adult"],
+      "notes": "Demo-added. Toddler-friendly. Use tamari (gluten-free soy sauce) for a celiac-safe version. Eggs in EU-14 but none of the 4 demo members list an egg allergy."
+    },
+    {
+      "recipe_id": "demo_chickpea_vegetable_soup",
+      "source_doc_id": "demo_added_for_capstone",
+      "source_chunk_id": "demo_added_for_capstone::0007",
+      "title": "Chickpea and Vegetable Soup",
+      "servings": 4,
+      "cook_time_minutes": 25,
+      "cuisine": "mediterranean",
+      "meal_type": "lunch",
+      "ingredients": [
+        {"amount": "1",   "unit": "can",        "text": "chickpeas, rinsed",                  "canonical_match": "lentils_raw", "allergens": []},
+        {"amount": "4",   "unit": "cups",       "text": "low-sodium vegetable broth",         "canonical_match": null,          "allergens": []},
+        {"amount": "2",   "unit": null,         "text": "carrots, diced",                     "canonical_match": null,          "allergens": []},
+        {"amount": "2",   "unit": null,         "text": "celery stalks, diced",               "canonical_match": null,          "allergens": []},
+        {"amount": "1",   "unit": null,         "text": "onion, chopped",                     "canonical_match": null,          "allergens": []},
+        {"amount": "1",   "unit": "can",        "text": "diced tomatoes",                     "canonical_match": null,          "allergens": []},
+        {"amount": "2",   "unit": "tablespoons","text": "olive oil",                          "canonical_match": null,          "allergens": []},
+        {"amount": "1",   "unit": "teaspoon",   "text": "dried oregano",                      "canonical_match": null,          "allergens": []},
+        {"amount": "1",   "unit": "teaspoon",   "text": "dried basil",                        "canonical_match": null,          "allergens": []}
+      ],
+      "nutrition_per_serving": {
+        "energy_kcal": 230,
+        "protein_g": 10,
+        "carbs_g": 36,
+        "fat_g": 6,
+        "fiber_g": 9,
+        "sodium_mg_label": "low"
+      },
+      "allergens_eu14": [],
+      "suitable_for_age_bands": ["toddler_1_3", "child_4_8", "child_9_12", "adolescent_13_18", "adult"],
+      "notes": "Demo-added. Hearty, toddler-friendly soup. Chickpeas canonical-matched to lentils_raw (closest analog in the 10-item USDA sample)."
     }
   ],
   "sample_weekly_plans": [
@@ -227,7 +380,12 @@
         "utah_wic_baked_chicken_with_vegetables",
         "utah_wic_quick_bean_soup",
         "demo_dairy_free_overnight_oats",
-        "demo_scrambled_eggs_with_vegetables"
+        "demo_scrambled_eggs_with_vegetables",
+        "demo_lemon_herb_baked_salmon_broccoli",
+        "demo_lentil_stew_carrots_spinach",
+        "demo_brown_rice_sweet_potato_black_beans",
+        "demo_vegetable_egg_fried_rice",
+        "demo_chickpea_vegetable_soup"
       ],
       "recipes_excluded_and_why": [
         {"recipe_id": "ca_wic_banana_oat_pancakes", "reason": "contains milk (dairy allergen — Adult 2)"},
@@ -235,21 +393,21 @@
         {"recipe_id": "ca_wic_veggie_tomato_pasta", "reason": "not listed as toddler_1_3 suitable"}
       ],
       "days": [
-        {"day": "mon", "breakfast": "demo_dairy_free_overnight_oats",      "lunch": "utah_wic_quick_bean_soup",           "dinner": "utah_wic_baked_chicken_with_vegetables"},
-        {"day": "tue", "breakfast": "demo_scrambled_eggs_with_vegetables", "lunch": "utah_wic_quick_bean_soup",           "dinner": "utah_wic_baked_chicken_with_vegetables"},
-        {"day": "wed", "breakfast": "demo_dairy_free_overnight_oats",      "lunch": "utah_wic_quick_bean_soup",           "dinner": "utah_wic_baked_chicken_with_vegetables"},
-        {"day": "thu", "breakfast": "demo_scrambled_eggs_with_vegetables", "lunch": "utah_wic_quick_bean_soup",           "dinner": "utah_wic_baked_chicken_with_vegetables"},
-        {"day": "fri", "breakfast": "demo_dairy_free_overnight_oats",      "lunch": "utah_wic_quick_bean_soup",           "dinner": "utah_wic_baked_chicken_with_vegetables"},
-        {"day": "sat", "breakfast": "demo_scrambled_eggs_with_vegetables", "lunch": "utah_wic_quick_bean_soup",           "dinner": "utah_wic_baked_chicken_with_vegetables"},
-        {"day": "sun", "breakfast": "demo_dairy_free_overnight_oats",      "lunch": "utah_wic_quick_bean_soup",           "dinner": "utah_wic_baked_chicken_with_vegetables"}
+        {"day": "mon", "breakfast": "demo_dairy_free_overnight_oats",      "lunch": "utah_wic_quick_bean_soup",                  "dinner": "utah_wic_baked_chicken_with_vegetables"},
+        {"day": "tue", "breakfast": "demo_scrambled_eggs_with_vegetables", "lunch": "demo_brown_rice_sweet_potato_black_beans",  "dinner": "demo_lemon_herb_baked_salmon_broccoli"},
+        {"day": "wed", "breakfast": "demo_dairy_free_overnight_oats",      "lunch": "demo_vegetable_egg_fried_rice",             "dinner": "demo_lentil_stew_carrots_spinach"},
+        {"day": "thu", "breakfast": "demo_scrambled_eggs_with_vegetables", "lunch": "demo_chickpea_vegetable_soup",              "dinner": "utah_wic_baked_chicken_with_vegetables"},
+        {"day": "fri", "breakfast": "demo_dairy_free_overnight_oats",      "lunch": "demo_brown_rice_sweet_potato_black_beans",  "dinner": "demo_lemon_herb_baked_salmon_broccoli"},
+        {"day": "sat", "breakfast": "demo_scrambled_eggs_with_vegetables", "lunch": "utah_wic_quick_bean_soup",                  "dinner": "demo_lentil_stew_carrots_spinach"},
+        {"day": "sun", "breakfast": "demo_dairy_free_overnight_oats",      "lunch": "demo_chickpea_vegetable_soup",              "dinner": "utah_wic_baked_chicken_with_vegetables"}
       ],
       "household_fit_notes": [
         "✅ Adult 1 (no allergens): every meal in this plan is cleared.",
         "✅ Adult 2 (dairy-allergic): every meal is dairy-free by construction — the banana pancake recipe was excluded because it contains milk.",
-        "✅ Child 1 (peanut-allergic): all meals are peanut-free; none of the 7 recipes in our demo corpus contain peanuts.",
-        "✅ Child 2 (toddler 1-3): every dinner is listed as toddler-suitable; pasta-based dinners (primavera + tomato pasta) were excluded because they're not marked suitable for this age band.",
-        "Variety caveat: the demo corpus is 7 recipes, so lunch and dinner repeat across the week. The **production system at [meal-map.app](https://meal-map.app)** rotates across 100+ recipes and regenerates weekly.",
-        "This is a **static JSON plan** for demonstration. For an agent-generated plan that uses the RAG pipeline (`search_knowledge` → retrieve → grounded composition), use the 'Generate meal plan via the RAG agent' button above."
+        "✅ Child 1 (peanut-allergic): all meals are peanut-free; none of the 12 recipes in our demo corpus contain peanuts.",
+        "✅ Child 2 (toddler 1-3): every meal is listed as toddler-suitable; 2 pasta-based dinners were excluded because they're not marked suitable for this age band.",
+        "Variety: 9 distinct recipes rotate across the 21 meal slots (2 breakfasts × 2 alternations, 4 lunch options, 4 dinner options). The **production system at [meal-map.app](https://meal-map.app)** rotates across 100+ recipes and regenerates weekly.",
+        "This is a **static JSON plan** for demonstration. For an agent-generated plan that uses the RAG pipeline (`search_knowledge` → `get_recipe_metadata` filter → grounded composition), use the 'Generate plan via the RAG agent' button at the **top** of this tab."
       ],
       "sourced_from": "demo corpus; honest-by-construction plan — not a dietitian recommendation"
     }

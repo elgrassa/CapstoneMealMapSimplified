@@ -17,7 +17,7 @@ from typing import Any
 from agent_config import AgentConfig
 from agent_tools_v2 import TOOL_FUNCTIONS, execute_tool
 from agent_observability import get_logger
-from mealmaster_ai.data.demo_user_profile import DEMO_PROFILE, personalize_query
+from mealmaster_ai.data.demo_user_profile import DEMO_PROFILE, DemoUserProfile, personalize_query
 from mealmaster_ai.rate_limiter import get_limiter
 from mealmaster_ai.validation.input_guardrails import (
     classify_intent_strict,
@@ -42,12 +42,30 @@ medical claims.
 6. get_evidence_confidence — runs the evidence gate and returns a tier decision.
 7. search_books — scoped search within user-uploaded books (demo Tab 2).
 8. add_book_note — persist a user note against a book.
+9. get_recipe_metadata — structured recipe metadata (allergens_eu14, suitable_for_age_bands, meal_type, nutrition_per_serving). Call this AFTER search_knowledge to confirm constraint fit.
 
 ## Strategy
 - Always call `assess_query_strategy` first.
 - Use the returned `recommended_mode` for all subsequent `search_knowledge` calls.
 - Ground EVERY factual claim in a retrieved chunk; include its `chunk_id` as a citation.
 - If `get_evidence_confidence` returns `refused`, tell the user the evidence is insufficient and suggest consulting a qualified professional.
+
+## Recipe-recommendation protocol (mandatory)
+When the query mentions an allergen (dairy, peanuts, eggs, gluten, fish, …), an
+age band (toddler, child, adolescent, …), a meal type (breakfast / lunch / dinner),
+or any other hard constraint, you MUST:
+
+1. Call `search_knowledge` to find candidate recipe chunks.
+2. For EACH recipe you're about to recommend, call `get_recipe_metadata(recipe_id)`
+   using the `recipe_id` extracted from the chunk's `doc_id` and check:
+   - `allergens_eu14` does not intersect the user's avoid list,
+   - `suitable_for_age_bands` contains the requested age band,
+   - `meal_type` matches the requested meal type.
+3. If a candidate fails any check, DROP IT and pick another from the retrieved
+   set. NEVER suggest "use a dairy substitute" as a workaround — if the recipe
+   as written contains dairy, it's out.
+4. Cite the `chunk_id` AND name the structured check you passed (e.g. "verified
+   dairy-free via get_recipe_metadata").
 
 ## Rules
 - NEVER diagnose a medical condition.
@@ -221,13 +239,15 @@ def run_agent(
     *,
     session_id: str | None = None,
     use_profile: bool = True,
+    enforce_household_constraints: bool = False,
 ) -> CapstoneRAGResponse:
     """Main agent entrypoint.
 
     Flow (every step is deterministic + cheap — live LLM call only at the end):
 
         input guardrails  →  strict intent  →  rate limiter  →  personalize (profile)
-        →  agent (PydanticAI or deterministic fallback)  →  response validator  →  return
+        →  agent (PydanticAI or deterministic fallback)  →  response validator
+        →  (optional) household-constraint post-filter with one rerun  →  return
 
     Args:
         query: user query text.
@@ -237,6 +257,12 @@ def run_agent(
             is used — never shared across sessions.
         use_profile: when True, the hardcoded demo household context is
             appended to the query so retrieval + agent can reason family-aware.
+        enforce_household_constraints: when True, parse any recipe_ids out of the
+            agent's response and verify each against DEMO_PROFILE constraints
+            (dairy / peanuts / toddler age band). If any violate, rerun ONCE
+            with a stricter query that explicitly bans the violating recipe_ids
+            and lists only the safe candidates. Used by Tab 5's "Generate plan
+            via the RAG agent" button.
 
     The rate limiter downgrades the path from live-LLM to deterministic
     fallback when the session cap or daily $ budget is exceeded. No user-facing
@@ -315,7 +341,152 @@ def run_agent(
     if use_profile:
         response.reasoning_notes = (response.reasoning_notes or "") + " [profile: DEMO_PROFILE applied]"
 
+    # --- Step 7 (optional): household-constraint post-filter with one rerun ---
+    if enforce_household_constraints:
+        response = _enforce_constraints_with_rerun(
+            original_query=sanitized_query,
+            response=response,
+            cfg=cfg,
+            session_id=session_id,
+            use_profile=use_profile,
+        )
+
     return response
+
+
+def _household_constraint_check(recipe_id: str, profile: DemoUserProfile = DEMO_PROFILE) -> tuple[bool, list[str]]:
+    """Return (ok, violations) for a single recipe_id against the household profile.
+
+    Returns (True, []) when the recipe passes all member constraints. Returns
+    (False, [reason, ...]) listing each violation. Also returns (True, [])
+    when the recipe_id is unknown — the caller should treat that as "no data,
+    do not reject on this alone".
+    """
+    meta = execute_tool("get_recipe_metadata", recipe_id=recipe_id)
+    if meta.get("error"):
+        return True, []
+    allergens = {a.lower() for a in meta.get("allergens_eu14", [])}
+    age_bands = {b for b in meta.get("suitable_for_age_bands", [])}
+
+    violations: list[str] = []
+    for member in profile.members:
+        member_allergens = {a.lower() for a in member.allergens}
+        bad_allergens = sorted(member_allergens & allergens)
+        if bad_allergens:
+            violations.append(
+                f"`{recipe_id}` contains {', '.join(bad_allergens)} — conflict for {member.display_name}"
+            )
+        if member.age_band not in age_bands:
+            violations.append(
+                f"`{recipe_id}` is not listed as suitable for {member.age_band} ({member.display_name})"
+            )
+    return (len(violations) == 0), violations
+
+
+_RECIPE_ID_PATTERN = __import__("re").compile(r"\b(?:utah_wic|lets_cook_with_kids_ca_wic|ca_wic|demo)_[a-z0-9_]+")
+
+
+def _extract_recipe_ids_from_response(answer_text: str) -> list[str]:
+    """Pull plausible recipe_ids out of the agent's free-text answer.
+
+    Matches the prefixes of our known recipe_ids in `data/rag/demo/derived/recipes.json`.
+    Cross-check each extracted id against the canonical list via get_recipe_metadata
+    (which returns `error` for unknowns).
+    """
+    found = _RECIPE_ID_PATTERN.findall(answer_text or "")
+    seen: list[str] = []
+    for rid in found:
+        if rid not in seen:
+            seen.append(rid)
+    return seen
+
+
+def _enforce_constraints_with_rerun(
+    *,
+    original_query: str,
+    response: CapstoneRAGResponse,
+    cfg: AgentConfig,
+    session_id: str,
+    use_profile: bool,
+) -> CapstoneRAGResponse:
+    """Post-filter the agent's response against household constraints; rerun once if any violate.
+
+    Rationale: the LLM may ignore the SYSTEM_PROMPT's call-get_recipe_metadata
+    instruction and pick constraint-violating recipes. This defense-in-depth
+    step validates deterministically and retries ONCE with a stricter query
+    that names the violators and lists only the safe alternatives.
+    """
+    recipe_ids = _extract_recipe_ids_from_response(response.answer)
+    if not recipe_ids:
+        return response  # no recipes to check — return as-is
+
+    violating: list[str] = []
+    all_violations: list[str] = []
+    for rid in recipe_ids:
+        ok, violations = _household_constraint_check(rid)
+        if not ok:
+            violating.append(rid)
+            all_violations.extend(violations)
+
+    if not violating:
+        # All picks passed — tag the response with the clean-pass marker.
+        response.reasoning_notes = (response.reasoning_notes or "") + " [constraint-enforce: all picks passed]"
+        return response
+
+    # Violations found — construct the stricter retry query.
+    # Load the full corpus to list safe alternatives.
+    all_recipes_meta = execute_tool("get_recipe_metadata", recipe_id="__force_dump__")
+    # ^ returns error, but we need the `available_ids` list from the error payload.
+    safe_ids: list[str] = []
+    for rid in all_recipes_meta.get("available_ids", []):
+        ok, _ = _household_constraint_check(rid)
+        if ok:
+            safe_ids.append(rid)
+
+    strict_query = (
+        f"{original_query}\n\n"
+        f"IMPORTANT — your previous selection violated the household constraints: "
+        f"{violating}. Reasons: {all_violations}.\n"
+        f"Pick recipes ONLY from this verified-safe list: {safe_ids}. "
+        f"Call get_recipe_metadata on each candidate before including it in your answer."
+    )
+
+    effective_query = personalize_query(strict_query, DEMO_PROFILE) if use_profile else strict_query
+
+    # Second attempt — we're inside run_agent already, so reuse the lower-level agent path directly.
+    want_real = (
+        os.getenv("OPENAI_API_KEY")
+        and os.getenv("CAPSTONE_USE_REAL_AGENT", "true").lower() != "false"
+    )
+    limiter = get_limiter()
+    budget = limiter.check_budget(session_id)
+    use_real_agent = bool(want_real and budget.allowed)
+
+    if not use_real_agent:
+        rerun_response = _deterministic_fallback(effective_query, cfg)
+    else:
+        try:
+            rerun_response = _run_pydantic_ai(effective_query, cfg)
+            limiter.record_call(session_id, _estimated_cost_per_call(cfg))
+        except Exception as e:
+            rerun_response = _deterministic_fallback(effective_query, cfg)
+            rerun_response.reasoning_notes = (
+                (rerun_response.reasoning_notes or "") + f" [rerun-pydantic-ai failed: {type(e).__name__}: {e}]"
+            )
+
+    # Re-check the rerun's picks; tag accordingly.
+    rerun_ids = _extract_recipe_ids_from_response(rerun_response.answer)
+    rerun_violations: list[str] = []
+    for rid in rerun_ids:
+        ok, v = _household_constraint_check(rid)
+        if not ok:
+            rerun_violations.extend(v)
+
+    rerun_response.reasoning_notes = (rerun_response.reasoning_notes or "") + (
+        f" [constraint-enforce: initial violations={violating} ({len(all_violations)} checks failed); "
+        f"reran once; rerun picks={rerun_ids}; rerun violations={rerun_violations or 'none'}]"
+    )
+    return rerun_response
 
 
 def _guardrail_refusal(query, guard, logger) -> CapstoneRAGResponse:

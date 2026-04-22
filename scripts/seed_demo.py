@@ -67,6 +67,14 @@ DOC_METADATA = {
         "authority_level": "medium",
         "safety_sensitive": False,
     },
+    "demo_added_for_capstone": {
+        "collection": "recipes",
+        "title": "Demo-added recipes (capstone, not a WIC source)",
+        "source_url": "https://github.com/elgrassa/CapstoneMealMapSimplified",
+        "license": "capstone-added (self-authored for demo scope)",
+        "authority_level": "low",
+        "safety_sensitive": False,
+    },
 }
 
 

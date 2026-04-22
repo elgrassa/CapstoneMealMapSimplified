@@ -1,0 +1,127 @@
+# Demo-added recipes for capstone — not from a WIC source
+# These 5 recipes are added to the demo corpus so the safe-by-construction 7-day plan
+# for the demo household has meaningful variety (4 safe dinners + 4 safe lunches,
+# not just 2). They're simple family-friendly recipes written for this capstone.
+# All are dairy-free + peanut-free + suitable for toddler_1_3.
+
+## Recipe 1 — Lemon-Herb Baked Salmon with Broccoli
+
+Ingredients:
+- 4 salmon fillets (about 450 g total)
+- 2 cups broccoli florets
+- 2 tablespoons olive oil
+- 1 lemon, sliced
+- 1 teaspoon dried dill
+- 1 teaspoon garlic powder
+- 1/2 teaspoon black pepper
+
+Servings: 4
+
+Method:
+1. Preheat the oven to 200 degrees C (400 F).
+2. Arrange salmon fillets and broccoli on a baking sheet.
+3. Drizzle olive oil over everything; season with dill, garlic powder, and pepper.
+4. Top each fillet with lemon slices.
+5. Bake for 15 minutes until salmon flakes easily with a fork.
+
+Nutrition per serving: about 310 kcal, 30 g protein, 6 g carbohydrates, 18 g fat, 2 g fiber.
+
+Suitable for toddlers (deboned, cut into small pieces). Contains fish (EU-14 allergen). Dairy-free, peanut-free, gluten-free.
+
+## Recipe 2 — Lentil Stew with Carrots and Spinach
+
+Ingredients:
+- 1 cup dry lentils, rinsed
+- 3 cups low-sodium vegetable broth
+- 2 carrots, diced
+- 1 onion, chopped
+- 2 cups fresh spinach
+- 2 tablespoons olive oil
+- 1 teaspoon ground cumin
+- 1/2 teaspoon black pepper
+
+Servings: 4
+
+Method:
+1. Heat olive oil in a pot; sauté onion and carrots for 5 minutes.
+2. Add lentils, broth, and cumin; bring to a simmer.
+3. Cover and cook for 20 minutes until lentils are tender.
+4. Stir in spinach and let wilt for 2 minutes.
+
+Nutrition per serving: about 220 kcal, 12 g protein, 32 g carbohydrates, 5 g fat, 10 g fiber.
+
+Toddler-friendly mashed texture. High in iron; pair with a vitamin C source (tomato, citrus) to improve non-heme iron absorption. Dairy-free, peanut-free.
+
+## Recipe 3 — Brown Rice with Sweet Potato and Black Beans
+
+Ingredients:
+- 1 cup brown rice (long-grain)
+- 2 cups water
+- 1 medium sweet potato, peeled and cubed
+- 1 can (400 g) black beans, rinsed
+- 2 tablespoons olive oil
+- 1 teaspoon ground cumin
+- 1/2 teaspoon smoked paprika
+- Black pepper to taste
+
+Servings: 4
+
+Method:
+1. Cook rice according to package directions.
+2. While rice cooks, roast sweet potato cubes at 200 degrees C (400 F) with olive oil for 20 minutes.
+3. Warm black beans with cumin and paprika.
+4. Combine rice, sweet potato, and beans in a bowl.
+
+Nutrition per serving: about 340 kcal, 11 g protein, 60 g carbohydrates, 6 g fat, 11 g fiber.
+
+Toddler-friendly (cut sweet potato small). Dairy-free, peanut-free, gluten-free.
+
+## Recipe 4 — Vegetable and Egg Fried Rice
+
+Ingredients:
+- 2 cups cooked brown rice (cold, day-old is best)
+- 2 large eggs, beaten
+- 1/2 cup frozen peas
+- 2 carrots, diced small
+- 2 tablespoons olive oil
+- 1 clove garlic, minced
+- 1 tablespoon low-sodium soy sauce (or tamari for gluten-free)
+- Black pepper to taste
+
+Servings: 4
+
+Method:
+1. Heat olive oil in a large pan or wok; sauté garlic and carrots for 3 minutes.
+2. Push vegetables to one side; pour beaten eggs into the empty side and scramble.
+3. Add rice and peas; stir to combine.
+4. Drizzle soy sauce and pepper; toss for 2 minutes.
+
+Nutrition per serving: about 280 kcal, 10 g protein, 42 g carbohydrates, 8 g fat, 4 g fiber.
+
+Toddler-friendly. Contains eggs (EU-14 allergen). Contains gluten if using regular soy sauce. Dairy-free, peanut-free.
+
+## Recipe 5 — Chickpea and Vegetable Soup
+
+Ingredients:
+- 1 can (400 g) chickpeas, rinsed
+- 4 cups low-sodium vegetable broth
+- 2 carrots, diced
+- 2 celery stalks, diced
+- 1 onion, chopped
+- 1 can (400 g) diced tomatoes
+- 2 tablespoons olive oil
+- 1 teaspoon dried oregano
+- 1 teaspoon dried basil
+- Black pepper to taste
+
+Servings: 4
+
+Method:
+1. Heat olive oil; sauté onion, carrots, and celery for 5 minutes.
+2. Add chickpeas, tomatoes, broth, oregano, and basil; bring to a simmer.
+3. Cover and cook for 15 minutes until vegetables are tender.
+4. Season with pepper.
+
+Nutrition per serving: about 230 kcal, 10 g protein, 36 g carbohydrates, 6 g fat, 9 g fiber.
+
+Toddler-friendly. Dairy-free, peanut-free, gluten-free.

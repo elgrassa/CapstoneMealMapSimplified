@@ -309,6 +309,78 @@ def add_book_note(book_id: str, note: str) -> dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
+# Tool 9 — get_recipe_metadata (structured fields, not chunk text)
+# ---------------------------------------------------------------------------
+import functools as _functools
+import json as _json
+from pathlib import Path as _Path
+
+
+@_functools.lru_cache(maxsize=1)
+def _load_recipes_json() -> dict[str, Any]:
+    """Load data/rag/demo/derived/recipes.json once per process. Fail-safe."""
+    try:
+        # THIS_FILE = ai/week1-rag/agent_tools_v2.py → parents[2] = repo root
+        here = _Path(__file__).resolve()
+        candidates = [
+            here.parents[2] / "data" / "rag" / "demo" / "derived" / "recipes.json",
+            _Path.cwd() / "data" / "rag" / "demo" / "derived" / "recipes.json",
+        ]
+        for p in candidates:
+            if p.exists():
+                return _json.loads(p.read_text(encoding="utf-8"))
+        return {"recipes": [], "sample_weekly_plans": [], "_error": "recipes.json not found"}
+    except Exception as exc:  # pragma: no cover — defensive
+        return {"recipes": [], "sample_weekly_plans": [], "_error": str(exc)}
+
+
+def get_recipe_metadata(recipe_id: str) -> dict[str, Any]:
+    """Return the STRUCTURED metadata for a single recipe — not chunk text.
+
+    IMPORTANT FOR THE LLM: call this tool AFTER `search_knowledge` whenever the
+    user mentions an allergen, an age band, or any hard constraint. Retrieval
+    gives you candidates; this tool tells you — with certainty — whether each
+    candidate satisfies the constraint. `search_knowledge` returns raw chunk
+    text and does NOT expose the structured allergen / age-band / meal_type
+    fields reliably enough to filter on.
+
+    Args:
+        recipe_id: canonical recipe id (e.g. `utah_wic_baked_chicken_with_vegetables`,
+            `demo_lentil_stew_carrots_spinach`). Exact match — no fuzzy lookup.
+
+    Returns:
+        A dict with:
+            title, meal_type, servings, cook_time_minutes,
+            nutrition_per_serving (kcal / protein_g / carbs_g / fat_g / fiber_g),
+            allergens_eu14 (list of EU-14 allergen group strings),
+            suitable_for_age_bands (list of age-band tokens),
+            notes.
+        OR `{"error": "recipe_id not found", "recipe_id": …, "available_ids": [...]}`
+        when the id doesn't exist.
+    """
+    data = _load_recipes_json()
+    for r in data.get("recipes", []):
+        if r.get("recipe_id") == recipe_id:
+            return {
+                "recipe_id": r["recipe_id"],
+                "title": r.get("title"),
+                "meal_type": r.get("meal_type"),
+                "servings": r.get("servings"),
+                "cook_time_minutes": r.get("cook_time_minutes"),
+                "cuisine": r.get("cuisine"),
+                "nutrition_per_serving": r.get("nutrition_per_serving", {}),
+                "allergens_eu14": r.get("allergens_eu14", []),
+                "suitable_for_age_bands": r.get("suitable_for_age_bands", []),
+                "notes": r.get("notes"),
+            }
+    return {
+        "error": "recipe_id not found",
+        "recipe_id": recipe_id,
+        "available_ids": [r.get("recipe_id") for r in data.get("recipes", [])],
+    }
+
+
+# ---------------------------------------------------------------------------
 # Dispatcher used by the agent runner + tests
 # ---------------------------------------------------------------------------
 TOOL_FUNCTIONS: dict[str, Any] = {
@@ -320,6 +392,7 @@ TOOL_FUNCTIONS: dict[str, Any] = {
     "get_evidence_confidence": get_evidence_confidence,
     "search_books": search_books,
     "add_book_note": add_book_note,
+    "get_recipe_metadata": get_recipe_metadata,
 }
 
 

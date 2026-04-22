@@ -1,6 +1,6 @@
 # Agent tools
 
-The capstone agent exposes **8 documented tools**. Each is a plain Python function with a docstring — the LLM sees that docstring as the tool description. Source: [ai/week1-rag/agent_tools_v2.py](../ai/week1-rag/agent_tools_v2.py).
+The capstone agent exposes **9 documented tools**. Each is a plain Python function with a docstring — the LLM sees that docstring as the tool description. Source: [ai/week1-rag/agent_tools_v2.py](../ai/week1-rag/agent_tools_v2.py).
 
 | # | Tool | Purpose |
 |---|---|---|

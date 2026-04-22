@@ -33,7 +33,7 @@ Each layer is implemented as a small, testable module.
 - **Safety-sensitive top-3** propagates `require_disclaimer`.
 - **Tuning** happens at the threshold + weight knobs. The demo ships neutral defaults (0.3 / 0.1); production at meal-map.app uses thresholds tuned against real corpus + real GT.
 
-### Layer 5 — Agent with 8 tools (`ai/week1-rag/pydantic_agent.py`)
+### Layer 5 — Agent with 9 tools (`ai/week1-rag/pydantic_agent.py`)
 
 - **Pattern:** PydanticAI agent with structured output (`CapstoneRAGResponse`). When `OPENAI_API_KEY` is unavailable, the agent falls back to a deterministic tool-calling loop so the demo still works offline.
 - **8 tools:** see [agent-tools.md](agent-tools.md).

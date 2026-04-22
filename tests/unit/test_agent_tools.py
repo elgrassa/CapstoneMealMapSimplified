@@ -13,7 +13,7 @@ from agent_tools_v2 import (
 )
 
 
-def test_eight_tools_registered():
+def test_nine_tools_registered():
     expected = {
         "assess_query_strategy",
         "search_knowledge",
@@ -23,8 +23,37 @@ def test_eight_tools_registered():
         "get_evidence_confidence",
         "search_books",
         "add_book_note",
+        "get_recipe_metadata",
     }
     assert set(TOOL_FUNCTIONS.keys()) == expected
+
+
+def test_get_recipe_metadata_returns_structured_fields_for_known_recipe():
+    from agent_tools_v2 import get_recipe_metadata
+    out = get_recipe_metadata("utah_wic_baked_chicken_with_vegetables")
+    assert "error" not in out
+    assert out["title"] == "Baked Chicken with Vegetables"
+    assert out["meal_type"] == "dinner"
+    assert isinstance(out["allergens_eu14"], list)
+    assert "toddler_1_3" in out["suitable_for_age_bands"]
+    assert out["nutrition_per_serving"]["energy_kcal"] == 320
+
+
+def test_get_recipe_metadata_returns_error_for_unknown_recipe():
+    from agent_tools_v2 import get_recipe_metadata
+    out = get_recipe_metadata("definitely_not_a_real_recipe_xyz")
+    assert out.get("error") == "recipe_id not found"
+    # available_ids must include at least the original WIC recipes
+    assert "utah_wic_baked_chicken_with_vegetables" in out.get("available_ids", [])
+
+
+def test_get_recipe_metadata_flags_demo_added_fish_recipe():
+    """Regression: the demo-added salmon recipe must expose the fish allergen via this tool."""
+    from agent_tools_v2 import get_recipe_metadata
+    out = get_recipe_metadata("demo_lemon_herb_baked_salmon_broccoli")
+    assert out.get("meal_type") == "dinner"
+    assert "fish" in out.get("allergens_eu14", [])
+    assert "toddler_1_3" in out.get("suitable_for_age_bands", [])
 
 
 def test_assess_query_strategy_returns_required_keys():

@@ -1,4 +1,4 @@
-"""Streamlit demo UI — 5 chained-sample tabs for the capstone.
+"""Streamlit demo UI — 6 chained-sample tabs for the capstone.
 
 Run locally: `make demo` (port 8502)
 
@@ -7,6 +7,11 @@ Design principle: every tab that operates on source content has a prominent
 switches to **"Upload / paste your own content"** mode where the full pipeline
 runs live on the user's text. This demonstrates the architecture without
 leaking proprietary corpus data.
+
+Tab 5 is the end-to-end recipe + household-fit demo: a RAG-generated meal plan
+at the top (live retrieval + LLM + household-constraint post-filter with
+auto-rerun), plus a per-recipe inspector and a static safe-by-construction
+7-day plan below.
 """
 from __future__ import annotations
 
@@ -180,7 +185,7 @@ flowchart LR
     S --> H[Optional hybrid fusion<br/>rag/hybrid.py]
     H --> RE[Reranker<br/>rag/reranker.py]
     RE --> EG{Evidence gate<br/>rag/evidence_gate.py<br/>0.3 / 0.1}
-    EG -->|supported| AG[Agent<br/>pydantic_agent.py<br/>8 tools]
+    EG -->|supported| AG[Agent<br/>pydantic_agent.py<br/>9 tools]
     EG -->|fallback| AG
     EG -->|refused| REF[Refusal]
     AG --> V[Pydantic validator<br/>structured_models.py]
@@ -203,14 +208,14 @@ flowchart LR
     with col2:
         st.markdown("**Agent layer**")
         st.markdown("- `pydantic_agent.py` — PydanticAI agent + fallback")
-        st.markdown("- `agent_tools_v2.py` — 8 documented tools")
+        st.markdown("- `agent_tools_v2.py` — 9 documented tools")
         st.markdown("- `structured_models.py` — Pydantic output schema")
         st.markdown("_Rubric: **Agents + LLM (3 pts)**_")
 
     st.divider()
     loaded = _bootstrap_indexes()
     st.success(f"Indexes loaded: {loaded}")
-    with st.expander("See the 8 tools (click to collapse)", expanded=True):
+    with st.expander("See the 9 tools (click to collapse)", expanded=True):
         for name, fn in TOOL_FUNCTIONS.items():
             doc = (fn.__doc__ or "").strip().split("\n")[0]
             st.markdown(f"**`{name}`** — {doc}")
@@ -542,13 +547,12 @@ with tab_recipe:
     _touch_rubric("agents_llm", "kb_retrieval")
     st.header("Recipe nutrition & household fit")
     st.caption(
-        "Pick a baked recipe → see its ingredients, per-serving macros, and whether it fits "
-        "each demo household member (dairy / peanuts / age-band). Two data paths: the pre-computed "
-        "JSON under `data/rag/demo/derived/recipes.json` (default, deterministic) or the live "
-        "regex parser running against the raw recipe text (unchecked, demonstrates the pipeline)."
+        "Primary path: **Generate plan via the RAG agent** — live retrieval + LLM grounded in the indexed corpus, "
+        "filtered against the demo household via `get_recipe_metadata`. Secondary path: pick any baked recipe below "
+        "to inspect its ingredients + per-serving macros + household fit statically."
     )
 
-    # Load pre-computed structured data
+    # Load pre-computed structured data (used by both the RAG section + the recipe inspector)
     import json as _json
     recipes_json_path = CAPSTONE_ROOT / "data" / "rag" / "demo" / "derived" / "recipes.json"
     try:
@@ -556,6 +560,118 @@ with tab_recipe:
     except Exception as e:  # pragma: no cover — deploy-time only
         st.error(f"Could not load recipes.json: {e}")
         recipes_data = {"recipes": [], "sample_weekly_plans": []}
+
+    # ========================================================================
+    # TOP: RAG plan generator (primary path)
+    # ========================================================================
+    st.subheader("Generate plan via the RAG agent (primary path)")
+    st.caption(
+        "**Yes, this is RAG.** `run_agent()` calls `search_knowledge` (BM25 over the indexed recipes + "
+        "nutrition_science collections) → feeds retrieved chunks to `gpt-4.1-mini` → filters candidates "
+        "against the demo household via `get_recipe_metadata` → returns a grounded response with citations. "
+        "A post-filter verifies each recipe_id against the household constraints; if any violate, the agent "
+        "auto-reruns ONCE with a stricter query. Counts against the cost guardrail (session cap + daily budget)."
+    )
+
+    has_prior_plan = bool(st.session_state.get("tab5_last_plan"))
+    default_plan_query = (
+        "Suggest 3 dinner recipes from the demo corpus that avoid dairy and peanuts "
+        "and are suitable for a toddler (age 1-3). Cite the specific chunk IDs and recipe IDs."
+    )
+    rag_plan_query = st.text_input(
+        "Plan request",
+        value=default_plan_query,
+        key="tab5_rag_plan_query",
+    )
+    btn_label = "🔁 Regenerate plan" if has_prior_plan else "✨ Generate plan"
+    if st.button(btn_label, key="tab5_rag_plan_btn", type="primary"):
+        cfg = AgentConfig.from_env()
+        with st.spinner("Retrieving recipes → filtering → composing (may auto-rerun on constraint violation)…"):
+            t0 = time.time()
+            response = run_agent(
+                rag_plan_query,
+                cfg,
+                session_id=st.session_state["session_id"],
+                enforce_household_constraints=True,
+            )
+            elapsed_ms = int((time.time() - t0) * 1000)
+        st.session_state["tab5_last_plan"] = {
+            "query": rag_plan_query,
+            "response": response,
+            "elapsed_ms": elapsed_ms,
+        }
+        record_event(
+            st.session_state["session_id"],
+            "rag_plan",
+            {
+                "query": rag_plan_query[:100],
+                "tier": response.evidence_tier,
+                "confidence": response.confidence,
+                "citation_count": len(response.citations),
+                "reran": "reran once" in (response.reasoning_notes or ""),
+            },
+        )
+
+    # Render the last RAG plan (persisted across reruns via session_state)
+    prior = st.session_state.get("tab5_last_plan")
+    if prior:
+        response = prior["response"]
+        tier_color = {"supported": "success", "fallback": "warning", "refused": "error"}.get(
+            response.evidence_tier, "info"
+        )
+        getattr(st, tier_color)(
+            f"**Evidence tier:** {response.evidence_tier}  •  confidence: {response.confidence:.3f}  •  {prior['elapsed_ms']} ms"
+        )
+
+        # Auto-rerun banner — surfaced if the post-filter fired
+        notes = (response.reasoning_notes or "").lower()
+        if "constraint-enforce" in notes and "reran once" in notes:
+            if "rerun violations=none" in notes:
+                st.info(
+                    "ℹ️  The agent's first pick included a recipe that violated the household constraints "
+                    "(dairy / peanut / toddler). The query was auto-refined with the safe-candidate list "
+                    "and the agent was rerun once. The response below is the constraint-satisfying version."
+                )
+            else:
+                st.warning(
+                    "⚠️  The agent was auto-rerun once, but some picks still violate the household constraints. "
+                    "Click Regenerate or tighten the query (e.g. 'pick only from this list: …')."
+                )
+        elif "all picks passed" in notes:
+            st.success("✅ All picks passed the household-constraint post-filter on the first try.")
+
+        st.markdown("#### RAG-generated plan")
+        st.write(response.answer)
+
+        if response.citations:
+            st.markdown("**Citations (proof of retrieval):**")
+            for c in response.citations:
+                st.markdown(
+                    f"- `{c.chunk_id}` from **{c.source_title}** "
+                    f"(collection `{c.collection}`, score {c.score:.3f}, authority {c.authority_level})"
+                )
+        else:
+            st.caption("No citations returned (may be on the deterministic fallback path).")
+
+        if response.tool_calls:
+            with st.expander("Tool-call trace", expanded=False):
+                for tc in response.tool_calls:
+                    st.markdown(f"- `{tc.name}` — `{(tc.result_preview or '')[:140]}`")
+
+        with st.expander("Agent reasoning notes", expanded=False):
+            st.code(response.reasoning_notes or "(empty)", language="text")
+
+    st.divider()
+
+    # ========================================================================
+    # MIDDLE: per-recipe inspection (static)
+    # ========================================================================
+    st.subheader("Inspect a specific recipe (static)")
+    st.caption(
+        "Pick any of the 12 recipes in the demo corpus to see ingredients, per-serving macros, and "
+        "the per-member household-fit verdict. Two data paths: the pre-computed JSON (default, "
+        "deterministic) or the live regex parser against the raw text (unchecked, demonstrates the pipeline)."
+    )
 
     use_precomputed = st.checkbox(
         "Use pre-computed derived/recipes.json (fast, deterministic)",
@@ -736,65 +852,7 @@ with tab_recipe:
                 for note in plan.get("household_fit_notes", []):
                     st.markdown(f"- {note}")
 
-        # ---- RAG-based plan generation (honest answer to "is this RAG?") ----
-        st.divider()
-        st.subheader("Generate plan via the RAG agent (live retrieval + LLM)")
-        st.caption(
-            "**Yes, this is RAG.** Click below to trigger `run_agent()` with a "
-            "plan-generation query. The agent calls `search_knowledge` (BM25 over the "
-            "indexed recipes + nutrition_science collections), feeds retrieved chunks "
-            "as context to `gpt-4.1-mini`, and returns a response grounded in citations. "
-            "Counts against the cost guardrail."
-        )
-        rag_plan_query = st.text_input(
-            "Plan request",
-            value=(
-                "Suggest 3 dinner recipes from the demo corpus that avoid dairy and peanuts "
-                "and are suitable for a toddler (age 1-3). Cite the specific chunk IDs."
-            ),
-            key="tab5_rag_plan_query",
-        )
-        if st.button("Generate plan via RAG agent", key="tab5_rag_plan_btn"):
-            cfg = AgentConfig.from_env()
-            with st.spinner("Retrieving recipes + composing plan…"):
-                t0 = time.time()
-                response = run_agent(rag_plan_query, cfg, session_id=st.session_state["session_id"])
-                elapsed_ms = int((time.time() - t0) * 1000)
-
-            tier_color = {"supported": "success", "fallback": "warning", "refused": "error"}.get(
-                response.evidence_tier, "info"
-            )
-            getattr(st, tier_color)(
-                f"**Evidence tier:** {response.evidence_tier}  •  confidence: {response.confidence:.3f}  •  {elapsed_ms} ms"
-            )
-            st.markdown("#### RAG-generated plan")
-            st.write(response.answer)
-
-            if response.citations:
-                st.markdown("**Citations (proof of retrieval):**")
-                for c in response.citations:
-                    st.markdown(
-                        f"- `{c.chunk_id}` from **{c.source_title}** "
-                        f"(collection `{c.collection}`, score {c.score:.3f}, authority {c.authority_level})"
-                    )
-            else:
-                st.caption("No citations returned (response may be from the deterministic fallback path).")
-
-            if response.tool_calls:
-                with st.expander("Tool-call trace", expanded=False):
-                    for tc in response.tool_calls:
-                        st.markdown(f"- `{tc.name}` — `{(tc.result_preview or '')[:140]}`")
-
-            record_event(
-                st.session_state["session_id"],
-                "rag_plan",
-                {
-                    "query": rag_plan_query[:100],
-                    "tier": response.evidence_tier,
-                    "confidence": response.confidence,
-                    "citation_count": len(response.citations),
-                },
-            )
+        # (RAG plan generation moved to TOP of Tab 5 — see the "primary path" section above.)
 
         record_event(
             st.session_state["session_id"],

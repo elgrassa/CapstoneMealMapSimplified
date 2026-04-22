@@ -48,6 +48,18 @@
       "raw_path": "data/rag/demo/nutrition_science/raw/human_nutrition_hawaii.txt",
       "chunks_path": "data/rag/demo/nutrition_science/chunks/chunks.jsonl",
       "index_path": "data/rag/demo/nutrition_science/index/bm25.pkl"
+    },
+    "demo_added_for_capstone": {
+      "collection": "recipes",
+      "title": "Demo-added recipes (capstone, not a WIC source)",
+      "source_url": "https://github.com/elgrassa/CapstoneMealMapSimplified",
+      "license": "capstone-added (self-authored for demo scope)",
+      "authority_level": "low",
+      "sha256": "fdf4ae187ec1538ec18c2ba42f47203037ea11c4accabba5dbe28798ef5aa85a",
+      "chunk_count": 10,
+      "raw_path": "data/rag/demo/recipes/raw/demo_added_for_capstone.txt",
+      "chunks_path": "data/rag/demo/recipes/chunks/chunks.jsonl",
+      "index_path": "data/rag/demo/recipes/index/bm25.pkl"
     }
   }
 }

@@ -24,7 +24,7 @@ A **retrieval-augmented agent** with explicit grounding, tiered evidence gates, 
 1. **Retrieval** — 5-collection corpus (operational recipes, evidence-tier nutrition, medical guidelines, experimental) with per-collection ranking strategies (relevance-first for recipes, relevance + authority for evidence, authority-boosted for medical). Demo ships 2 collections fully populated from public-domain sources; the other 3 live in production at [meal-map.app](https://meal-map.app).
 2. **Evidence gate** — tiered confidence (`supported ≥ 0.3`, `fallback 0.1–0.3`, `refused < 0.1`) with authority-weighted adjustment.
 3. **Safety** — medical-boundary validator catches 44 forbidden phrases (5 shipped in the demo sample) + 9 referral triggers (2 shipped). Never diagnoses. Never prescribes.
-4. **Agent with 8 documented tools** — PydanticAI agent that composes retrieval, allergen-detection, nutrition-lookup, medical-boundary checks, and evidence gating.
+4. **Agent with 9 documented tools** — PydanticAI agent that composes retrieval, allergen-detection, nutrition-lookup, medical-boundary checks, and evidence gating.
 5. **Evaluation** — LLM-as-Judge on 6 behavioral criteria + hand-crafted ground truth with hit@k / MRR / precision / recall.
 6. **Monitoring** — JSONL logs + SQLite feedback DB + logs-to-GT pipeline that turns thumbs-up responses into new training data.
 
