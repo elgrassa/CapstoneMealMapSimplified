@@ -1,12 +1,9 @@
-"""8 documented agent tools — scrubbed, demo-scoped.
+"""9 agent tools.
 
-Each tool has:
-- a docstring the LLM sees as its tool description
-- structured inputs/outputs (Pydantic-friendly dicts)
-- an IP-safe implementation that works on the sample data shipped here
-
-For the production 10-tool version with full rule-corpus, canonical-ingredients,
-and medical-boundary catalogs, see https://meal-map.app.
+Each tool has a docstring the LLM sees as its description, structured inputs
+and outputs (dicts compatible with PydanticAI's tool-plain schema), and an
+implementation that runs on the sample data shipped with the repo. Production
+at meal-map.app uses the same tool shape with tuned catalogs.
 """
 from __future__ import annotations
 
@@ -206,8 +203,8 @@ def check_medical_boundaries(text: str) -> dict[str, Any]:
 
     Returns:
         dict with `forbidden_phrase` (or None), `referral_triggers` (list),
-        `boundary_ok: bool`, `disclaimer: str`. Production has 44 phrases + 9 triggers;
-        the sample here has 5 + 2 to demonstrate the pattern.
+        `boundary_ok: bool`, `disclaimer: str`. This repo ships a 5-phrase +
+        2-trigger sample that mirrors the production shape.
     """
     forbidden = contains_forbidden_phrase(text)
     triggers = detect_referral_triggers(text)

@@ -1,12 +1,9 @@
-"""Capstone PydanticAI agent — 8 documented tools, structured output.
+"""PydanticAI agent with 9 tools and structured output.
 
-Falls back to a deterministic "v1-style" agent when:
-- `pydantic-ai` isn't installed
-- `OPENAI_API_KEY` isn't set (e.g., grader running `make demo` without a key)
-- `DEMO_MODE=true` and user requested offline mode
-
-The SYSTEM_PROMPT is intentionally generic — production MealMaster uses a longer,
-domain-tuned prompt at meal-map.app.
+Falls back to a deterministic path when `pydantic-ai` isn't installed, when
+`OPENAI_API_KEY` isn't set, or when the rate limiter forces offline mode.
+The SYSTEM_PROMPT here is generic; the production prompt at meal-map.app is
+longer and domain-tuned.
 """
 from __future__ import annotations
 
@@ -254,32 +251,27 @@ def run_agent(
     use_profile: bool = True,
     enforce_household_constraints: bool = False,
 ) -> CapstoneRAGResponse:
-    """Main agent entrypoint.
+    """Run the agent pipeline end-to-end and return a structured response.
 
-    Flow (every step is deterministic + cheap — live LLM call only at the end):
-
-        input guardrails  →  strict intent  →  rate limiter  →  personalize (profile)
-        →  agent (PydanticAI or deterministic fallback)  →  response validator
-        →  (optional) household-constraint post-filter with one rerun  →  return
+    Pipeline: input guardrails → curative-claim pre-check → strict intent →
+    rate limiter → personalize against the demo household → agent (PydanticAI
+    or deterministic fallback) → response validator → optional household-
+    constraint post-filter with one rerun.
 
     Args:
-        query: user query text.
-        cfg: agent config; `AgentConfig.from_env()` if None.
-        session_id: session key used by the rate limiter. Streamlit passes its
-            session_state session_id. If None, a hashed per-process fallback
-            is used — never shared across sessions.
-        use_profile: when True, the hardcoded demo household context is
-            appended to the query so retrieval + agent can reason family-aware.
-        enforce_household_constraints: when True, parse any recipe_ids out of the
-            agent's response and verify each against DEMO_PROFILE constraints
-            (dairy / peanuts / toddler age band). If any violate, rerun ONCE
-            with a stricter query that explicitly bans the violating recipe_ids
-            and lists only the safe candidates. Used by Tab 5's "Generate plan
-            via the RAG agent" button.
+        query: the user's question.
+        cfg: agent config; defaults to `AgentConfig.from_env()`.
+        session_id: rate-limiter session key. Streamlit passes its
+            `session_state["session_id"]`. None → per-process fallback.
+        use_profile: append the demo household context to the query so
+            retrieval + agent can reason family-aware.
+        enforce_household_constraints: post-filter recipe picks against
+            `DEMO_PROFILE` (dairy, peanuts, toddler age band); if any violate,
+            rerun once with a stricter query that names the violators and lists
+            the safe candidates. Tab 5's "Generate plan" button sets this.
 
-    The rate limiter downgrades the path from live-LLM to deterministic
-    fallback when the session cap or daily $ budget is exceeded. No user-facing
-    error — the `reasoning_notes` records the decision for observability.
+    When the session cap or daily $ budget is reached, the rate limiter
+    downgrades to the deterministic path and tags `reasoning_notes`.
     """
     cfg = cfg or AgentConfig.from_env()
     session_id = session_id or f"proc-{os.getpid()}"

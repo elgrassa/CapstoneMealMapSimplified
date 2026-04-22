@@ -1,18 +1,11 @@
-"""Response validator — runs AFTER the agent produces a response, before it ships to the user.
+"""Post-hoc validator for structured agent responses.
 
-Catches four classes of output defect:
+Runs after the agent returns, before the response ships to the user. Flags:
+`supported` tier with zero citations, `requires_disclaimer=True` with empty
+disclaimer text, forbidden medical phrases in the answer body, and tier /
+confidence inconsistency (e.g. `supported` with confidence=0.0).
 
-1. **Unsupported confidence claim** — `supported` tier must carry citations; a
-   supported tier with zero citations is a bug or a hallucination escape.
-2. **Missing disclaimer** — when `requires_disclaimer` is True, the
-   `disclaimer_text` must be non-empty AND the answer should not contradict it.
-3. **Forbidden-phrase escape** — the response text must not contain diagnostic
-   or curative claims (sampled from `medical_boundary_sample`).
-4. **Tier / confidence consistency** — a `supported` response with
-   confidence=0.0 is inconsistent; a `refused` with citations is inconsistent.
-
-Pure Python, no network. Used by the agent loop as a post-validation step and
-by tests to pin output-shape invariants.
+Pure Python, no network.
 """
 from __future__ import annotations
 

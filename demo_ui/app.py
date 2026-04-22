@@ -1,17 +1,15 @@
-"""Streamlit demo UI — 6 chained-sample tabs for the capstone.
+"""Streamlit demo UI — 6 tabs for the capstone.
 
-Run locally: `make demo` (port 8502)
+Run locally: `make demo` (port 8502).
 
-Design principle: every tab that operates on source content has a prominent
-**"[x] Use pre-processed demo corpus"** checkbox, checked by default. Unchecking
-switches to **"Upload / paste your own content"** mode where the full pipeline
-runs live on the user's text. This demonstrates the architecture without
-leaking proprietary corpus data.
+Each tab that operates on source content has a "Use pre-processed demo corpus"
+checkbox, on by default. Unchecking switches to upload / paste your own content
+so the full parse → chunk → index → retrieve → respond pipeline runs live on
+the user's text. The default path keeps the baked corpus small and public-domain.
 
-Tab 5 is the end-to-end recipe + household-fit demo: a RAG-generated meal plan
-at the top (live retrieval + LLM + household-constraint post-filter with
-auto-rerun), plus a per-recipe inspector and a static safe-by-construction
-7-day plan below.
+Tab 5 runs the full agent loop (retrieve → filter against the household via
+`get_recipe_metadata` → compose → auto-rerun on constraint violation) and also
+shows a per-recipe inspector and a static 7-day plan below it.
 """
 from __future__ import annotations
 
@@ -190,7 +188,7 @@ tab_arch, tab_query, tab_parse, tab_eval, tab_tune, tab_recipe = st.tabs([
 with tab_arch:
     _touch_rubric("problem_description", "code_organization")
     st.header("Architecture walkthrough")
-    st.caption("Each node maps to a module file + a rubric criterion.")
+    st.caption("Each box in the diagram is a module file in this repo.")
     st.markdown(
         """
 ```mermaid
@@ -230,7 +228,7 @@ flowchart LR
     st.divider()
     loaded = _bootstrap_indexes()
     st.success(f"Indexes loaded: {loaded}")
-    with st.expander("See the 9 tools (click to collapse)", expanded=True):
+    with st.expander("The 9 tools", expanded=True):
         for name, fn in TOOL_FUNCTIONS.items():
             doc = (fn.__doc__ or "").strip().split("\n")[0]
             st.markdown(f"**`{name}`** — {doc}")
@@ -562,9 +560,9 @@ with tab_recipe:
     _touch_rubric("agents_llm", "kb_retrieval")
     st.header("Recipe nutrition & household fit")
     st.caption(
-        "Primary path: **Generate plan via the RAG agent** — live retrieval + LLM grounded in the indexed corpus, "
-        "filtered against the demo household via `get_recipe_metadata`. Secondary path: pick any baked recipe below "
-        "to inspect its ingredients + per-serving macros + household fit statically."
+        "Top section runs the RAG agent against the corpus and filters picks against the demo household. "
+        "Middle section: pick any baked recipe to see ingredients, macros, and a per-member fit verdict. "
+        "Bottom: a static 7-day plan built by hand so every slot is safe for all 4 members."
     )
 
     # Load pre-computed structured data (used by both the RAG section + the recipe inspector)
@@ -579,13 +577,11 @@ with tab_recipe:
     # ========================================================================
     # TOP: RAG plan generator (primary path)
     # ========================================================================
-    st.subheader("Generate plan via the RAG agent (primary path)")
+    st.subheader("Generate plan via the RAG agent")
     st.caption(
-        "**Yes, this is RAG.** `run_agent()` calls `search_knowledge` (BM25 over the indexed recipes + "
-        "nutrition_science collections) → feeds retrieved chunks to `gpt-4.1-mini` → filters candidates "
-        "against the demo household via `get_recipe_metadata` → returns a grounded response with citations. "
-        "A post-filter verifies each recipe_id against the household constraints; if any violate, the agent "
-        "auto-reruns ONCE with a stricter query. Counts against the cost guardrail (session cap + daily budget)."
+        "`run_agent()` retrieves chunks with BM25, grounds `gpt-4.1-mini` on them, and filters picks "
+        "against the demo household via `get_recipe_metadata`. If any pick violates the constraints "
+        "the agent re-runs once with a stricter query. Costs count against the session + daily budget."
     )
 
     has_prior_plan = bool(st.session_state.get("tab5_last_plan"))
@@ -627,21 +623,9 @@ with tab_recipe:
                         "reran": "reran once" in (response.reasoning_notes or ""),
                     },
                 )
-            except Exception as exc:  # noqa: BLE001 — we want to surface every error here
-                # Streamlit Cloud redacts error messages by default; re-render the
-                # full traceback inside an expander so users / graders can report
-                # bugs with a real stack trace. No user data is included — just
-                # the exception chain.
-                st.error(
-                    "The RAG plan call failed. The deterministic fallback did not run "
-                    "because the error propagated out of `run_agent`. See technical details below."
-                )
-                with st.expander("Technical details (click if reporting a bug)", expanded=False):
-                    st.caption(
-                        "Streamlit Cloud redacts exception messages by default. This expander "
-                        "exposes the full traceback locally so it can be copy-pasted into an issue. "
-                        "The traceback contains no user data beyond the query text already visible above."
-                    )
+            except Exception as exc:  # noqa: BLE001 — surface every error, Streamlit Cloud redacts by default
+                st.error("`run_agent` raised. Deterministic fallback did not trigger. Traceback below.")
+                with st.expander("Traceback", expanded=False):
                     st.exception(exc)
 
     # Render the last RAG plan (persisted across reruns via session_state)
@@ -660,17 +644,16 @@ with tab_recipe:
         if "constraint-enforce" in notes and "reran once" in notes:
             if "rerun violations=none" in notes:
                 st.info(
-                    "ℹ️  The agent's first pick included a recipe that violated the household constraints "
-                    "(dairy / peanut / toddler). The query was auto-refined with the safe-candidate list "
-                    "and the agent was rerun once. The response below is the constraint-satisfying version."
+                    "First pick violated a household constraint. Query was refined with the safe-candidate list "
+                    "and the agent re-ran once. The response below is the constraint-satisfying version."
                 )
             else:
                 st.warning(
-                    "⚠️  The agent was auto-rerun once, but some picks still violate the household constraints. "
-                    "Click Regenerate or tighten the query (e.g. 'pick only from this list: …')."
+                    "Agent re-ran once but some picks still violate the constraints. "
+                    "Regenerate or narrow the query (e.g. `pick only from: …`)."
                 )
         elif "all picks passed" in notes:
-            st.success("✅ All picks passed the household-constraint post-filter on the first try.")
+            st.success("All picks passed the household-constraint post-filter on the first try.")
 
         st.markdown("#### RAG-generated plan")
         st.write(response.answer)
@@ -698,11 +681,11 @@ with tab_recipe:
     # ========================================================================
     # MIDDLE: per-recipe inspection (static)
     # ========================================================================
-    st.subheader("Inspect a specific recipe (static)")
+    st.subheader("Inspect a specific recipe")
     st.caption(
-        "Pick any of the 12 recipes in the demo corpus to see ingredients, per-serving macros, and "
-        "the per-member household-fit verdict. Two data paths: the pre-computed JSON (default, "
-        "deterministic) or the live regex parser against the raw text (unchecked, demonstrates the pipeline)."
+        "Pick one of the 12 recipes in the demo corpus: ingredients, per-serving macros, "
+        "and a per-member fit verdict. Toggle the pre-computed JSON (fast, deterministic) "
+        "or the live regex parser running on the raw text."
     )
 
     use_precomputed = st.checkbox(

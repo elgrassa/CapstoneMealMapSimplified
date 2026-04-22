@@ -68,7 +68,7 @@ open http://localhost:8502
 docker compose down
 ```
 
-The agent query should return a response citing a **Utah WIC** recipe chunk (the demo corpus is WIC / Open Oregon / UH Hawai'i + demo-added — **no NHLBI**, that was in an older plan draft).
+The agent query should return a response citing a **Utah WIC** recipe chunk. Demo corpus sources: Utah WIC, California WIC, Open Oregon nutrition textbook, University of Hawai'i nutrition textbook, plus 5 demo-added recipes.
 
 ## 7. Terminal CLI agent
 

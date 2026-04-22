@@ -6,7 +6,7 @@
 
 [meal-map](https://meal-map.app) is a family meal-planning product. This repo is the **capstone submission** for Alexey Grigorev's "From RAG to Agents" course. It contains the retrieval + agent + evaluation spine: Python code, a committed demo corpus, tests, an evaluation harness, and a Streamlit app **built specifically for capstone grading** (deployed on Streamlit Cloud — URL above).
 
-The full product UI (family setup, weekly plan, shopping, pantry, nutrition tracking) lives at [meal-map.app](https://meal-map.app) and is in active development. The Streamlit app in this repo is **not** the product — it's a grading surface that exercises the retrieval + agent pipeline end-to-end in 5 tabs.
+The full product UI (family setup, weekly plan, shopping, pantry, nutrition tracking) lives at [meal-map.app](https://meal-map.app) and is in active development. The Streamlit app in this repo is a grading surface that runs the retrieval + agent pipeline end-to-end across 6 tabs — it is not the product.
 
 
 <img width="2882" height="2692" alt="215FD3BC-D69B-421E-B74E-4B318712F5D3" src="https://github.com/user-attachments/assets/411ea58a-8608-493b-9572-88f13806daab" />
@@ -41,7 +41,7 @@ This capstone ships the RAG + agent + evaluation + monitoring subset of that sys
 ```
 query → input guardrails → strict intent → curative-claim check → rate limiter
       → personalize (demo household) → retrieve (BM25, optional hybrid)
-      → evidence gate (supported / fallback / refused) → agent (8 tools)
+      → evidence gate (supported / fallback / refused) → agent (9 tools)
       → response validator → structured response + citations
 ```
 
@@ -62,7 +62,7 @@ git clone https://github.com/elgrassa/CapstoneMealMapSimplified
 cd CapstoneMealMapSimplified
 uv sync
 make seed            # verifies the baked BM25 corpus (<1s)
-make test            # 107 tests
+make test            # unit + judge tests (131 at last run)
 make eval-offline    # LLM-as-Judge on mock fixtures, no API key
 make tune            # chunk-strategy × top_k sweep
 ```
@@ -88,7 +88,7 @@ docker compose up -d   # seed + backend + dashboard + streamlit grading app
 - **Python pinned.** `pyproject.toml` requires Python `>=3.13,<3.14`.
 - **Dependencies locked.** [`uv.lock`](uv.lock) is committed; `uv sync` gives everyone the same versions.
 - **Data accessible.** The demo BM25 corpus (4 public-domain sources, 28 chunks) is committed under [`data/rag/demo/`](data/rag/demo/). No external downloads required. Each source file's SHA256 is recorded in [`data/rag/demo/provenance_manifest.json`](data/rag/demo/provenance_manifest.json); `make seed` re-verifies every hash in <1 second.
-- **One-command setup:** `git clone … && cd CapstoneMealMapSimplified && uv sync && make seed && make test` — 118 tests green, zero API key required.
+- **One-command setup:** `git clone … && cd CapstoneMealMapSimplified && uv sync && make seed && make test` — full unit + judge suite green, zero API key required.
 - **Docker alternative:** `docker compose up -d` brings up the seed job + backend + monitoring dashboard + Streamlit grading app in one command.
 - **CI regression gate.** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs seed → test → eval-offline → tuning sweep on every PR.
 
@@ -109,7 +109,7 @@ docker compose up -d   # seed + backend + dashboard + streamlit grading app
 ## Additional bonus points
 
 - **Terminal UI** — [`ai/week1-rag/cli/week1-meal-query-agent.py`](ai/week1-rag/cli/week1-meal-query-agent.py) runs the full agent from a single CLI call: `python3 ai/week1-rag/cli/week1-meal-query-agent.py "What is the RDA for vitamin D?"`.
-- **Web UI (capstone grading)** — [`demo_ui/app.py`](demo_ui/app.py) is a Streamlit app built for evaluation: 5 tabs with live parameter tuning. `make demo` opens it on `http://localhost:8502`.
+- **Web UI (capstone grading)** — [`demo_ui/app.py`](demo_ui/app.py) is a Streamlit app built for evaluation: 6 tabs with live parameter tuning. `make demo` opens it on `http://localhost:8502`.
 - **Web UI (production)** — the full React product at [meal-map.app](https://meal-map.app) — see the screenshot grid above.
 - **Cloud deployment** — the Streamlit grading app deploys to Streamlit Community Cloud from this repo (free tier, public repos). Setup: [`docs/deployment.md`](docs/deployment.md). Production React UI at [meal-map.app](https://meal-map.app) is on a separate stack (Base44).
 
@@ -127,7 +127,7 @@ https://elgrassa-capstonemealmapsimplified-demo-uiapp-djyorf.streamlit.app/
 3. **Book parsing playground** — pick a chunking strategy and see the chunks it produces.
 4. **Evaluation laboratory** — pick a ground-truth case, see retrieval output, LLM-as-Judge scoring.
 5. **Parameter tuning sandbox** — move thresholds and authority weights, watch the evidence gate flip supported / fallback / refused.
-6. **Recipe nutrition & household fit** — pick one of the 5 baked recipes, see its structured ingredients, per-serving macros, and a per-member verdict (safe / allergen-conflict / partial-data) for the demo household. Toggle the default `derived/recipes.json` path vs. the live regex parser + canonical-sample matcher to see how the same data is reached either way. Also shows a static sample 7-day plan for the demo household (full weekly plan generation is a production-only feature at [meal-map.app](https://meal-map.app)).
+6. **Recipe nutrition & household fit** — at the top, a RAG-generated plan button that runs the full agent loop against the corpus and post-filters picks against the household. Below it, an inspector for any of the 12 baked recipes (structured ingredients, per-serving macros, per-member safe/conflict verdict) with a toggle between the pre-computed `derived/recipes.json` and the live regex parser. At the bottom, a static 7-day plan built by hand so every slot is safe for all 4 household members by construction (production weekly-plan generation lives at [meal-map.app](https://meal-map.app)).
 
 Sidebar shows a live cost budget (session + daily), the hardcoded demo household used for personalization, and a rubric-coverage checklist.
 
@@ -172,7 +172,7 @@ Per-criterion expected evidence: [`docs/self-audit.md`](docs/self-audit.md). Met
 | KB + retrieval (2) | [`src/mealmaster_ai/rag/`](src/mealmaster_ai/rag/), [`docs/retrieval-evaluation.md`](docs/retrieval-evaluation.md), [`docs/evaluation-results-baseline.md`](docs/evaluation-results-baseline.md) |
 | Agents + LLM (3) | [`pydantic_agent.py`](ai/week1-rag/pydantic_agent.py), [`agent_tools_v2.py`](ai/week1-rag/agent_tools_v2.py), [`docs/agent-tools.md`](docs/agent-tools.md) |
 | Code organization (2) | standard `src/` layout, modules split by concern |
-| Testing (2) | 107 tests across [`tests/unit/`](tests/unit/), [`tests/judge/`](tests/judge/), [`tests/streamlit/`](tests/streamlit/); mutation via `make mutmut` |
+| Testing (2) | unit + judge + Streamlit-AppTest suites under [`tests/unit/`](tests/unit/), [`tests/judge/`](tests/judge/), [`tests/streamlit/`](tests/streamlit/); mutation testing via `make mutmut` |
 | Evaluation (3) | [`ai/week1-rag/evals/`](ai/week1-rag/evals/), `make eval-offline` / `make eval-live` / `make tune` |
 | Hand-crafted GT (2) | [`ai/week1-rag/evals/ground_truth_handcrafted.json`](ai/week1-rag/evals/ground_truth_handcrafted.json) — 20 cases with behaviour markers |
 | Manual eval (2) | [`notebooks/60_manual_evaluation.ipynb`](notebooks/60_manual_evaluation.ipynb) |

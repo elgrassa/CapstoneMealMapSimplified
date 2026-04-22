@@ -153,18 +153,19 @@ def test_run_pydantic_ai_raises_typeerror_on_bad_output(monkeypatch):
 
 
 def test_run_agent_survives_broken_pydantic_ai_return(monkeypatch):
-    """End-to-end — with a real OPENAI_API_KEY env var forcing the real-LLM branch,
-    if `_run_pydantic_ai` raises TypeError, `run_agent` MUST fall through to the
-    deterministic path and return a valid CapstoneRAGResponse. The user must
-    never see an uncaught exception reach the Streamlit call site.
+    """If `_run_pydantic_ai` raises on the real-LLM branch, `run_agent` MUST
+    fall through to the deterministic path. Uncaught exceptions at the
+    Streamlit call site are what we're defending against.
+
+    Patches `run_agent.__globals__` directly so the injection holds even if
+    another test re-imported `pydantic_agent` into `sys.modules` earlier.
     """
     load_all_demo_indexes()
-    import pydantic_agent as pa
 
     def _broken_pydantic_ai(query, cfg):
         raise TypeError("simulated: PydanticAI returned NoneType; expected CapstoneRAGResponse.")
 
-    monkeypatch.setattr(pa, "_run_pydantic_ai", _broken_pydantic_ai)
+    monkeypatch.setitem(run_agent.__globals__, "_run_pydantic_ai", _broken_pydantic_ai)
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test-placeholder-not-called")
 
     response = run_agent(
@@ -173,6 +174,5 @@ def test_run_agent_survives_broken_pydantic_ai_return(monkeypatch):
         session_id="regression-v3",
     )
     assert isinstance(response, CapstoneRAGResponse)
-    # Deterministic path tagged the failure in reasoning_notes for observability.
     assert "pydantic-ai failed" in (response.reasoning_notes or "")
     assert "TypeError" in (response.reasoning_notes or "")

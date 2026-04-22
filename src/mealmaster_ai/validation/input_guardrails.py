@@ -1,17 +1,7 @@
-"""Input guardrails — run BEFORE the query hits the agent.
-
-Catches three classes of malicious / malformed input:
-
-1. **Prompt injection** — attempts to override the system prompt, jailbreak the
-   agent, or exfiltrate system instructions.
-2. **Off-topic queries** — queries that are unrelated to nutrition, recipes,
-   food, or meal planning. Routed to a "not in scope" response instead of
-   wasting retrieval + LLM budget.
-3. **Size / shape violations** — queries that are too long, too short, or
-   contain control characters that can confuse downstream tokenizers.
-
-Returns a `GuardrailDecision(allowed, reason, sanitized_query)` so the caller
-can choose to block, modify, or pass the query. Deterministic, no network.
+"""Pre-agent input guardrails: prompt-injection patterns, off-topic queries,
+size / shape violations. Returns a `GuardrailDecision(allowed, reason,
+sanitized_query)` the caller can use to block, modify, or pass the query.
+Deterministic, no network.
 """
 from __future__ import annotations
 
@@ -42,8 +32,7 @@ _PROMPT_INJECTION_MARKERS: tuple[str, ...] = (
     "no restrictions",
 )
 
-# Off-topic: tokens that strongly indicate the query isn't about food/nutrition.
-# Deliberately small — we err on the side of allowing through.
+# Off-topic hard markers. Small list — we err toward allow.
 _OFF_TOPIC_HARD_MARKERS: tuple[str, ...] = (
     "write code",
     "write a script",
@@ -70,7 +59,7 @@ _OFF_TOPIC_HARD_MARKERS: tuple[str, ...] = (
     "compose an email",
 )
 
-# Nutrition / recipe / food vocabulary. If ANY of these appear, we lean toward allow.
+# If any in-scope marker appears, allow the query.
 _IN_SCOPE_MARKERS: tuple[str, ...] = (
     "food", "eat", "eating", "diet", "nutrition", "nutrient", "recipe", "meal",
     "cook", "cooking", "kitchen",

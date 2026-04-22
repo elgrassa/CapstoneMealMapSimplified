@@ -1,11 +1,11 @@
-# Architecture (sanitized)
+# Architecture
 
-This document describes the architectural patterns behind the capstone. It deliberately omits production tuning constants (exact chunk sizes tuned per real corpus, exact threshold curves, exact prompt wording, exact rule-corpus content). The public demo uses neutral starting values; production at [meal-map.app](https://meal-map.app) uses tuned values derived from internal eval runs.
+The capstone ships the retrieval + agent spine. Production at [meal-map.app](https://meal-map.app) uses tuned values (chunk sizes, evidence thresholds, prompt wording, rule corpus) derived from internal eval runs; this repo ships neutral starting values so the pipeline is reproducible in CI.
 
 ## Layered pipeline
 
 ```
-query → intent router → per-collection retrieval (BM25 + optional hybrid) → reranker → evidence gate (tiered) → agent (8 tools) → LLM → Pydantic validator → structured response
+query → intent router → per-collection retrieval (BM25 + optional hybrid) → reranker → evidence gate (tiered) → agent (9 tools) → LLM → Pydantic validator → structured response
 ```
 
 Each layer is implemented as a small, testable module.
